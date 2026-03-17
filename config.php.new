@@ -1,0 +1,15 @@
+<?php
+return [
+    'GEMINI_API_KEY' => 'PLACEHOLDER',
+    'ADZUNA_APP_ID' => 'PLACEHOLDER',
+    'ADZUNA_APP_KEY' => 'PLACEHOLDER',
+    'DB_PATH' => __DIR__ . '/data/jobpulse.sqlite',
+    'REGISTRATION_MODE' => 'admin_approval',
+    'SMTP' => [
+        'host' => 'PLACEHOLDER',
+        'port' => 587,
+        'user' => 'PLACEHOLDER',
+        'pass' => 'PLACEHOLDER',
+        'secure' => 'tls'
+    ]
+];
