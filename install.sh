@@ -26,5 +26,13 @@ else
     echo "data/users.json already exists, skipping."
 fi
 
+# Set permissions for writeable directories
+echo "Setting permissions for data and uploads directories..."
+if [ ! -d "uploads" ]; then
+    mkdir -p uploads
+fi
+chmod -R 700 data
+chmod -R 700 uploads
+
 echo "Installation complete!"
 echo "Please remember to add your Gemini API Key directly to config.php."
