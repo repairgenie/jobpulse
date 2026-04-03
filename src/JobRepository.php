@@ -5,6 +5,8 @@ namespace App;
 use PDO;
 use Exception;
 
+require_once __DIR__ . '/Database.php';
+
 class JobRepository
 {
     private PDO $db;
@@ -48,8 +50,15 @@ class JobRepository
 
     public function saveJobAnalysis(array $data): int
     {
-        // For backwards compatibility if DB alter didn't run, handle gracefully
-        // We will try inserting with ai_analysis
+        if (isset($data['id'])) {
+            $stmt = $this->db->prepare("UPDATE jobs SET ai_analysis = :ai_analysis WHERE id = :id");
+            $stmt->execute([
+                'id' => $data['id'],
+                'ai_analysis' => $data['ai_analysis'] ?? ''
+            ]);
+            return $data['id'];
+        }
+
         try {
             $stmt = $this->db->prepare("
                 INSERT INTO jobs (company_name, job_title, status, date_applied, notes, ai_analysis)

@@ -109,7 +109,7 @@ class User
     {
         $users = $this->getUsers();
         foreach ($users as $user) {
-            if ($user['id'] === $userId && $user['role'] === 'admin') {
+            if (isset($user['id']) && $user['id'] === $userId && $user['role'] === 'admin') {
                 return true;
             }
         }
@@ -126,7 +126,7 @@ class User
         $found = false;
         
         foreach ($users as &$user) {
-            if ($user['id'] === $userIdToApprove) {
+            if (isset($user['id']) && $user['id'] === $userIdToApprove) {
                 $user['is_active'] = 1;
                 $found = true;
                 break;
@@ -147,7 +147,7 @@ class User
         $found = false;
 
         foreach ($users as &$user) {
-            if ($user['id'] === $userId) {
+            if (isset($user['id']) && $user['id'] === $userId) {
                 $user['resume_text'] = $resumeText;
                 $user['resume_filename'] = $filename;
                 $found = true;
@@ -167,7 +167,7 @@ class User
     {
         $users = $this->getUsers();
         foreach ($users as $user) {
-            if ($user['id'] === $userId) {
+            if (isset($user['id']) && $user['id'] === $userId) {
                 if (isset($user['resume_text'])) {
                     return [
                         'filename' => $user['resume_filename'] ?? 'resume.pdf',

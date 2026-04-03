@@ -113,7 +113,7 @@ if ($hasCompanyHint || $hasTitleHint) {
 
 
 try {
-    if (GEMINI_API_KEY === 'your_gemini_api_key_here' || GEMINI_API_KEY === 'PLACEHOLDER' || empty(GEMINI_API_KEY)) {
+    if (GEMINI_API_KEY === 'your_gemini_api_key_here' || GEMINI_API_KEY === 'PLACEHOLDER' || GEMINI_API_KEY === 'test_key' || empty(GEMINI_API_KEY)) {
         $mock = [
             'company_problems'    => "## Company Pain Points\n\n* **Scaling support infrastructure** — The posting emphasizes \"enterprise-grade\" and \"high-stakes accounts\" suggesting current support tooling is straining under growth.\n* **Knowledge silos** — Multiple references to documentation and playbooks indicate institutional knowledge loss risk.\n* **AI integration gap** — Explicit mention of AI-driven workflows suggests the team lacks someone who can bridge traditional IT and modern AI tooling.",
             'company_goals'       => "## Strategic Goals\n\n* **Build a world-class support org** within 12 months — the language around \"playbooks\" and \"escalation management\" suggests a team in formalization mode.\n* **Retain enterprise accounts** — High-touch support emphasis signals churn risk in the customer base is a live concern.\n* **Embed AI into support workflows** — This hire is likely the first or early mover on an internal AI-augmentation initiative.",
