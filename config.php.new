@@ -3,6 +3,7 @@ return [
     'GEMINI_API_KEY' => 'PLACEHOLDER',
     'ADZUNA_APP_ID' => 'PLACEHOLDER',
     'ADZUNA_APP_KEY' => 'PLACEHOLDER',
+    'PROXY_URL' => '', // Optional proxy URL for scraping (e.g. http://proxy.example.com:8080)
     'DB_PATH' => __DIR__ . '/data/jobpulse.sqlite',
     'REGISTRATION_MODE' => 'admin_approval',
     'SMTP' => [

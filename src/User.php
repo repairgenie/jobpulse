@@ -183,7 +183,7 @@ class User
     {
         $users = $this->getUsers();
         foreach ($users as $user) {
-            if ($user['id'] === $userId) {
+            if (isset($user['id']) && $user['id'] === $userId) {
                 return [
                     'city' => $user['city'] ?? '',
                     'state' => $user['state'] ?? '',

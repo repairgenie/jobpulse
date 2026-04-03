@@ -76,7 +76,9 @@ Your job is to produce a comprehensive JSON report with EXACTLY these fields, al
    1. The Question itself.
    2. **Why it matters**: A 1-2 sentence note on what this reveals about the company or how it protects the candidate's interests.
 
-Return ONLY a valid JSON object with EXACTLY these eight fields:
+7. **applicant_tactical_analysis**: An advanced guide for the candidate on how to increase their chances of securing this specific job using social media (e.g., LinkedIn, Twitter) and direct outreach. Identify the likely key decision-makers (e.g., "VP of Engineering", "Director of Support"), outline a strategy to grab their attention, and provide 2-3 sample outreach message templates.
+
+Return ONLY a valid JSON object with EXACTLY these nine fields:
 {
   "extracted_company": "The short, clean company name (max 5 words). NO sentences or explanations. If not found, use a 1-2 word inference or 'Unknown'.",
   "extracted_role": "The clean job title (max 5 words). NO sentences or explanations.",
@@ -85,7 +87,8 @@ Return ONLY a valid JSON object with EXACTLY these eight fields:
   "candidate_alignment": "(markdown)",
   "interview_prep": "(markdown)",
   "cheat_sheet": "(markdown)",
-  "questions_to_ask": "(markdown)"
+  "questions_to_ask": "(markdown)",
+  "applicant_tactical_analysis": "(markdown)"
 }
 All markdown values must be thorough. For extracted_company and extracted_role: use ONLY the name/title (max 5 words). Do not include 'The company is...' or any other narrative. E.g. 'Google' or 'ACME Corp'.
 EOT;

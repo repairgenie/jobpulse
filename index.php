@@ -249,6 +249,10 @@ $history = array_slice($history, 0, 5);
                             </div>
                             <div class="ml-3 flex-1 overflow-hidden">
                                 <p class="text-sm font-bold text-white truncate"><?= htmlspecialchars(trim(($_SESSION['first_name'] ?? '') . ' ' . ($_SESSION['last_name'] ?? ''))) ?: htmlspecialchars($userEmail) ?></p>
+                                <div class="flex items-center mt-1 group">
+                                    <input type="checkbox" id="autogen" x-model="autoGen" @change="toggleAutoGen" class="mr-1.5 accent-primary h-3 w-3">
+                                    <label for="autogen" class="text-[10px] text-slate-400 cursor-pointer group-hover:text-slate-300">Auto-Gen Daily</label>
+                                </div>
                             </div>
                             <button @click="logout" class="ml-auto p-2 text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"><i data-lucide="log-out" class="h-5 w-5"></i></button>
                         </div>
@@ -1227,6 +1231,17 @@ $history = array_slice($history, 0, 5);
                 // Analysis State
                 showAnalysisModal: false,
                 analysisBusy: false,
+
+                autoGen: localStorage.getItem('jobpulse_autogen') === 'true',
+
+                toggleAutoGen() {
+                    localStorage.setItem('jobpulse_autogen', this.autoGen);
+                    fetch('/api/update_user_preference.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ auto_generate_docs: this.autoGen })
+                    }).catch(e => console.error("Could not sync autogen preference.", e));
+                },
                 analysisData: null,
                 analysisError: null,
                 analysisTab: 'company_problems',
@@ -1242,7 +1257,8 @@ $history = array_slice($history, 0, 5);
                     { key: 'candidate_alignment', label: 'Your Edge', icon: 'shield-check' },
                     { key: 'interview_prep', label: 'Interview Prep', icon: 'messages-square' },
                     { key: 'questions_to_ask', label: 'Questions to Ask', icon: 'help-circle' },
-                    { key: 'cheat_sheet', label: 'Cheat Sheet', icon: 'zap' }
+                    { key: 'cheat_sheet', label: 'Cheat Sheet', icon: 'zap' },
+                    { key: 'applicant_tactical_analysis', label: 'Outreach Tactics', icon: 'send' }
                 ],
 
                 // Editing Wizard State
@@ -1456,7 +1472,9 @@ $history = array_slice($history, 0, 5);
                         `\n---\n`,
                         `## Questions to Ask\n\n${this.analysisData.questions_to_ask || ''}`,
                         `\n---\n`,
-                        `## Interview Cheat Sheet\n\n${this.analysisData.cheat_sheet || ''}`
+                        `## Interview Cheat Sheet\n\n${this.analysisData.cheat_sheet || ''}`,
+                        `\n---\n`,
+                        `## Outreach Tactics\n\n${this.analysisData.applicant_tactical_analysis || ''}`
                     ].join('\n');
                 },
 

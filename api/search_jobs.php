@@ -4,8 +4,10 @@ session_start();
 
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/../src/User.php';
+require_once __DIR__ . '/../src/JobScraper.php';
 
 use App\User;
+use App\JobScraper;
 
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
@@ -50,43 +52,27 @@ if ($hybrid) $searchKeywords[] = 'hybrid';
 
 $keywordString = implode(' ', $searchKeywords);
 
+// Initialize Scraper using proxy if configured
+$proxyUrl = defined('PROXY_URL') ? PROXY_URL : null;
+$scraper = new JobScraper($proxyUrl);
+
 if (ADZUNA_APP_ID === 'your_adzuna_app_id' || ADZUNA_APP_ID === 'PLACEHOLDER' || empty(ADZUNA_APP_ID)) {
-    // Generate Secure Mock Response
+    // Generate Scraper / Mock Response
     sleep(1); // simulate network delay
     
-    $mockJobs = [
-        [
-            'id' => 'mock_1',
-            'title' => 'Senior Developer',
-            'company' => ['display_name' => 'Acme Corp'],
-            'location' => ['display_name' => $location ?: 'Anywhere'],
-            'description' => 'We are seeking a senior developer with 5+ years of experience in PHP, React, and Cloud infrastructure. ' . ($remote ? 'This is a fully remote role.' : ''),
-            'redirect_url' => '#'
-        ],
-        [
-            'id' => 'mock_2',
-            'title' => 'Frontend Engineer',
-            'company' => ['display_name' => 'TechStart Inc'],
-            'location' => ['display_name' => 'San Francisco, CA'],
-            'description' => 'Join our growing team! Must have strong JavaScript, Vue.js, and Tailwind CSS skills. Good communication is critical.',
-            'redirect_url' => '#'
-        ],
-        [
-            'id' => 'mock_3',
-            'title' => 'Systems Administrator',
-            'company' => ['display_name' => 'Global Networks'],
-            'location' => ['display_name' => $location ?: 'New York, NY'],
-            'description' => 'Maintain our internal AWS instances and Linux servers. Bash scripting and Docker knowledge required.',
-            'redirect_url' => '#'
-        ]
-    ];
-    
-    echo json_encode([
-        'success' => true,
-        'results' => $mockJobs,
-        'filters_applied' => ['q' => $keywordString, 'l' => $location, 'mocked' => true]
-    ]);
-    exit;
+    try {
+        $scrapedJobs = $scraper->searchJobs($keywordString, $location, $remote, $hybrid);
+        echo json_encode([
+            'success' => true,
+            'results' => $scrapedJobs,
+            'filters_applied' => ['q' => $keywordString, 'l' => $location, 'scraped' => true]
+        ]);
+        exit;
+    } catch (\Exception $e) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        exit;
+    }
 }
 
 // Live Adzuna API Call
