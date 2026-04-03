@@ -76,7 +76,9 @@ Your job is to produce a comprehensive JSON report with EXACTLY these fields, al
    1. The Question itself.
    2. **Why it matters**: A 1-2 sentence note on what this reveals about the company or how it protects the candidate's interests.
 
-Return ONLY a valid JSON object with EXACTLY these eight fields:
+7. **applicant_tactical_analysis**: An advanced guide for the candidate on how to increase their chances of securing this specific job using social media (e.g., LinkedIn, Twitter) and direct outreach. Identify the likely key decision-makers (e.g., "VP of Engineering", "Director of Support"), outline a strategy to grab their attention, and provide 2-3 sample outreach message templates.
+
+Return ONLY a valid JSON object with EXACTLY these nine fields:
 {
   "extracted_company": "The short, clean company name (max 5 words). NO sentences or explanations. If not found, use a 1-2 word inference or 'Unknown'.",
   "extracted_role": "The clean job title (max 5 words). NO sentences or explanations.",
@@ -85,7 +87,8 @@ Return ONLY a valid JSON object with EXACTLY these eight fields:
   "candidate_alignment": "(markdown)",
   "interview_prep": "(markdown)",
   "cheat_sheet": "(markdown)",
-  "questions_to_ask": "(markdown)"
+  "questions_to_ask": "(markdown)",
+  "applicant_tactical_analysis": "(markdown)"
 }
 All markdown values must be thorough. For extracted_company and extracted_role: use ONLY the name/title (max 5 words). Do not include 'The company is...' or any other narrative. E.g. 'Google' or 'ACME Corp'.
 EOT;
@@ -110,7 +113,7 @@ if ($hasCompanyHint || $hasTitleHint) {
 
 
 try {
-    if (GEMINI_API_KEY === 'your_gemini_api_key_here' || GEMINI_API_KEY === 'PLACEHOLDER' || empty(GEMINI_API_KEY)) {
+    if (GEMINI_API_KEY === 'your_gemini_api_key_here' || GEMINI_API_KEY === 'PLACEHOLDER' || GEMINI_API_KEY === 'test_key' || empty(GEMINI_API_KEY)) {
         $mock = [
             'company_problems'    => "## Company Pain Points\n\n* **Scaling support infrastructure** — The posting emphasizes \"enterprise-grade\" and \"high-stakes accounts\" suggesting current support tooling is straining under growth.\n* **Knowledge silos** — Multiple references to documentation and playbooks indicate institutional knowledge loss risk.\n* **AI integration gap** — Explicit mention of AI-driven workflows suggests the team lacks someone who can bridge traditional IT and modern AI tooling.",
             'company_goals'       => "## Strategic Goals\n\n* **Build a world-class support org** within 12 months — the language around \"playbooks\" and \"escalation management\" suggests a team in formalization mode.\n* **Retain enterprise accounts** — High-touch support emphasis signals churn risk in the customer base is a live concern.\n* **Embed AI into support workflows** — This hire is likely the first or early mover on an internal AI-augmentation initiative.",

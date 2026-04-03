@@ -1,5 +1,8 @@
 <?php
 
+require_once __DIR__ . '/../bootstrap.php';
+require_once __DIR__ . '/../src/JobRepository.php';
+
 use App\JobRepository;
 
 header('Content-Type: application/json');
