@@ -4,8 +4,12 @@ require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/../src/JobRepository.php';
 
 use App\JobRepository;
+require_once __DIR__ . '/../src/Security.php';
+use App\Security;
 
 header('Content-Type: application/json');
+
+Security::checkCsrf();
 
 $method = $_SERVER['REQUEST_METHOD'];
 $jobRepo = new JobRepository();
@@ -45,8 +49,14 @@ try {
                 exit;
             }
             
-            $jobRepo->update((int)$id, $input);
-            echo json_encode(['message' => 'Job updated']);
+            // Check if this is a partial status update or a full update
+            if (isset($input['status']) && count($input) === 2) { // just id and status
+                $jobRepo->updateStatus((int)$id, $input['status']);
+                echo json_encode(['message' => 'Job status updated']);
+            } else {
+                $jobRepo->update((int)$id, $input);
+                echo json_encode(['message' => 'Job updated']);
+            }
             break;
 
         case 'DELETE':

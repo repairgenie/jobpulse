@@ -109,7 +109,7 @@ class User
     {
         $users = $this->getUsers();
         foreach ($users as $user) {
-            if (isset($user['id']) && $user['id'] === $userId && $user['role'] === 'admin') {
+            if ($user['id'] === $userId && $user['role'] === 'admin') {
                 return true;
             }
         }
@@ -126,7 +126,7 @@ class User
         $found = false;
         
         foreach ($users as &$user) {
-            if (isset($user['id']) && $user['id'] === $userIdToApprove) {
+            if ($user['id'] === $userIdToApprove) {
                 $user['is_active'] = 1;
                 $found = true;
                 break;
@@ -147,7 +147,7 @@ class User
         $found = false;
 
         foreach ($users as &$user) {
-            if (isset($user['id']) && $user['id'] === $userId) {
+            if ($user['id'] === $userId) {
                 $user['resume_text'] = $resumeText;
                 $user['resume_filename'] = $filename;
                 $found = true;
@@ -167,7 +167,7 @@ class User
     {
         $users = $this->getUsers();
         foreach ($users as $user) {
-            if (isset($user['id']) && $user['id'] === $userId) {
+            if ($user['id'] === $userId) {
                 if (isset($user['resume_text'])) {
                     return [
                         'filename' => $user['resume_filename'] ?? 'resume.pdf',
@@ -183,7 +183,7 @@ class User
     {
         $users = $this->getUsers();
         foreach ($users as $user) {
-            if (isset($user['id']) && $user['id'] === $userId) {
+            if ($user['id'] === $userId) {
                 return [
                     'city' => $user['city'] ?? '',
                     'state' => $user['state'] ?? '',
@@ -193,5 +193,127 @@ class User
         }
         return null;
     }
+
+    public function setResetToken(string $email, string $token): bool
+    {
+        $users = $this->getUsers();
+        $found = false;
+
+        foreach ($users as &$user) {
+            if ($user['email'] === $email) {
+                $user['reset_token'] = password_hash($token, PASSWORD_DEFAULT);
+                $user['reset_token_expires'] = time() + 3600; // 1 hour expiration
+                $found = true;
+                break;
+            }
+        }
+
+        if ($found) {
+            $this->saveUsers($users);
+            return true;
+        }
+        return false;
+    }
+
+    public function resetPassword(string $email, string $token, string $newPassword): bool
+    {
+        $users = $this->getUsers();
+        $found = false;
+
+        foreach ($users as &$user) {
+            if ($user['email'] === $email) {
+                if (isset($user['reset_token']) && isset($user['reset_token_expires'])) {
+                    if (time() <= $user['reset_token_expires'] && password_verify($token, $user['reset_token'])) {
+                        $user['password_hash'] = password_hash($newPassword, PASSWORD_DEFAULT);
+                        unset($user['reset_token']);
+                        unset($user['reset_token_expires']);
+                        $found = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if ($found) {
+            $this->saveUsers($users);
+            return true;
+        }
+        return false;
+    }
+
+    public function setVerificationToken(string $email, string $token): bool
+    {
+        $users = $this->getUsers();
+        $found = false;
+
+        foreach ($users as &$user) {
+            if ($user['email'] === $email) {
+                $user['verification_token'] = password_hash($token, PASSWORD_DEFAULT);
+                $found = true;
+                break;
+            }
+        }
+
+        if ($found) {
+            $this->saveUsers($users);
+            return true;
+        }
+        return false;
+    }
+
+    public function verifyEmail(string $email, string $token): bool
+    {
+        $users = $this->getUsers();
+        $found = false;
+
+        foreach ($users as &$user) {
+            if ($user['email'] === $email) {
+                if (isset($user['verification_token']) && password_verify($token, $user['verification_token'])) {
+                    $user['is_active'] = 1;
+                    unset($user['verification_token']);
+                    $found = true;
+                    break;
+                }
+            }
+        }
+
+        if ($found) {
+            $this->saveUsers($users);
+            return true;
+        }
+        return false;
+    }
+
+    public function getWorkHistory(string $userId): ?string
+    {
+        $users = $this->getUsers();
+        foreach ($users as $user) {
+            if (isset($user['id']) && $user['id'] === $userId) {
+                return $user['work_history'] ?? '';
+            }
+        }
+        return null;
+    }
+
+    public function updateWorkHistory(string $userId, string $workHistory): bool
+    {
+        $users = $this->getUsers();
+        $found = false;
+
+        foreach ($users as &$user) {
+            if (isset($user['id']) && $user['id'] === $userId) {
+                $user['work_history'] = $workHistory;
+                $found = true;
+                break;
+            }
+        }
+
+        if ($found) {
+            $this->saveUsers($users);
+            return true;
+        }
+        return false;
+    }
+
 }
 

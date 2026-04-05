@@ -20,8 +20,28 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
     case 'GET':
-        $resumes = $resumeMgr->getResumes($userId);
-        echo json_encode(['success' => true, 'resumes' => $resumes]);
+        $action = $_GET['action'] ?? 'list';
+        if ($action === 'get_full') {
+            $id = $_GET['id'] ?? '';
+            if (!$id) {
+                echo json_encode(['success' => false, 'error' => 'No ID provided.']);
+                die();
+            }
+            $resume = $resumeMgr->getResumeFull($userId, $id);
+            if ($resume) {
+                echo json_encode(['success' => true, 'resume' => [
+                    'id' => $resume['id'],
+                    'filename' => $resume['filename'],
+                    'category' => $resume['category'],
+                    'text' => $resume['extracted_text']
+                ]]);
+            } else {
+                echo json_encode(['success' => false, 'error' => 'Resume not found.']);
+            }
+        } else {
+            $resumes = $resumeMgr->getResumes($userId);
+            echo json_encode(['success' => true, 'resumes' => $resumes]);
+        }
         break;
 
     case 'POST':
@@ -44,6 +64,20 @@ switch ($method) {
             $success = $resumeMgr->deleteResume($userId, $resumeId);
             echo json_encode(['success' => $success]);
         } 
+
+        elseif ($action === 'update') {
+            $filename = $input['filename'] ?? 'resume.txt';
+            $category = $input['category'] ?? 'General';
+            $extractedText = $input['extracted_text'] ?? '';
+
+            if (empty($extractedText)) {
+                echo json_encode(['success' => false, 'error' => 'Text cannot be empty.']);
+                die();
+            }
+
+            $data = $resumeMgr->saveResume($userId, $filename, $extractedText, $category, $resumeId);
+            echo json_encode(['success' => true, 'resume' => $data]);
+        }
         else {
             http_response_code(400);
             echo json_encode(['success' => false, 'error' => 'Invalid action.']);

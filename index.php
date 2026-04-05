@@ -118,6 +118,30 @@ $history = array_slice($history, 0, 5);
             Link.configure({ openOnClick: false })
         ];
     </script>
+    <script type="importmap">
+    {
+      "imports": {
+        "@tiptap/core": "https://esm.sh/@tiptap/core@2.2.4",
+        "@tiptap/starter-kit": "https://esm.sh/@tiptap/starter-kit@2.2.4",
+        "@tiptap/pm/state": "https://esm.sh/@tiptap/pm@2.2.4/state",
+        "@tiptap/pm/view": "https://esm.sh/@tiptap/pm@2.2.4/view",
+        "@tiptap/pm/model": "https://esm.sh/@tiptap/pm@2.2.4/model",
+        "@tiptap/pm/transform": "https://esm.sh/@tiptap/pm@2.2.4/transform",
+        "@tiptap/pm/commands": "https://esm.sh/@tiptap/pm@2.2.4/commands",
+        "@tiptap/pm/schema-list": "https://esm.sh/@tiptap/pm@2.2.4/schema-list",
+        "@tiptap/pm/schema-basic": "https://esm.sh/@tiptap/pm@2.2.4/schema-basic",
+        "@tiptap/pm/keymap": "https://esm.sh/@tiptap/pm@2.2.4/keymap",
+        "@tiptap/pm/history": "https://esm.sh/@tiptap/pm@2.2.4/history"
+      }
+    }
+    </script>
+    <script type="module">
+        import { Editor } from '@tiptap/core';
+        import StarterKit from '@tiptap/starter-kit';
+        window.TiptapEditor = Editor;
+        window.TiptapStarterKit = StarterKit;
+    </script>
+
 </head>
 <body class="bg-darkbg text-slate-300 font-sans antialiased min-h-screen selection:bg-primary selection:text-white" <?php if(!$isLoggedIn) echo 'x-data="authApp()"'; else echo 'x-data="dashboardApp()"'; ?>>
     
@@ -154,10 +178,16 @@ $history = array_slice($history, 0, 5);
                     <div>
                         <input x-model="form.email" type="email" required class="block w-full rounded-xl bg-darkbg border border-slate-700 text-white shadow-sm focus:border-primary focus:ring-1 focus:ring-primary sm:text-sm px-4 py-3 placeholder-slate-600 transition-colors" placeholder="Email Address">
                     </div>
-                    <div>
-                        <input x-model="form.password" type="password" required class="block w-full rounded-xl bg-darkbg border border-slate-700 text-white shadow-sm focus:border-primary focus:ring-1 focus:ring-primary sm:text-sm px-4 py-3 placeholder-slate-600 transition-colors" placeholder="Password">
+                    <div x-show="tab !== 'forgot'">
+                        <input x-model="form.password" type="password" :required="tab !== 'forgot'" class="block w-full rounded-xl bg-darkbg border border-slate-700 text-white shadow-sm focus:border-primary focus:ring-1 focus:ring-primary sm:text-sm px-4 py-3 placeholder-slate-600 transition-colors" placeholder="Password">
                     </div>
                     
+                    <div x-show="tab === 'reset'" x-transition class="pt-2" style="display:none;">
+                            <input x-model="form.token" type="text" :required="tab === 'reset'" class="block w-full rounded-xl bg-darkbg border border-slate-700 text-white shadow-sm focus:border-primary focus:ring-1 focus:ring-primary sm:text-sm px-4 py-3 placeholder-slate-600 transition-colors" placeholder="Reset Token">
+                        </div>
+                        <div x-show="tab === 'reset'" x-transition class="pt-2" style="display:none;">
+                            <input x-model="form.new_password" type="password" :required="tab === 'reset'" class="block w-full rounded-xl bg-darkbg border border-slate-700 text-white shadow-sm focus:border-primary focus:ring-1 focus:ring-primary sm:text-sm px-4 py-3 placeholder-slate-600 transition-colors" placeholder="New Password">
+                        </div>
                     <div x-show="tab === 'register'" x-transition class="grid grid-cols-6 gap-3 pt-2" style="display:none;">
                         <div class="col-span-3">
                             <input x-model="form.first_name" type="text" class="block w-full rounded-xl bg-darkbg border border-slate-700 text-white shadow-sm focus:border-primary focus:ring-1 focus:ring-primary sm:text-sm px-4 py-3 placeholder-slate-600 transition-colors" placeholder="First Name">
@@ -176,9 +206,13 @@ $history = array_slice($history, 0, 5);
                         </div>
                     </div>
 
+
+                    <div x-show="tab === 'login'" class="flex items-center justify-between mt-2">
+                        <a href="#" @click.prevent="tab = 'forgot'" class="text-xs font-medium text-primary hover:text-indigo-400 transition-colors">Forgot your password?</a>
+                    </div>
                     <div class="pt-2">
                         <button type="submit" :disabled="loading" class="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-[0_0_20px_rgba(99,102,241,0.25)] text-sm font-bold text-white bg-gradient-to-r from-primary to-secondary hover:from-indigo-500 hover:to-violet-500 transition-all hover:-translate-y-0.5 disabled:opacity-50">
-                            <span x-show="!loading" x-text="tab === 'login' ? 'Sign In' : 'Create Account'"></span>
+                            <span x-show="!loading" x-text="tab === 'login' ? 'Sign In' : (tab === 'register' ? 'Create Account' : (tab === 'forgot' ? 'Send Reset Link' : 'Reset Password'))"></span>
                             <span x-show="loading" class="flex items-center" style="display: none;"><i data-lucide="loader-2" class="animate-spin -ml-1 mr-2 h-4 w-4"></i> Processing...</span>
                         </button>
                     </div>
@@ -189,10 +223,14 @@ $history = array_slice($history, 0, 5);
     <script>
         function authApp() {
             return {
-                tab: 'login', form: { email: '', password: '', first_name: '', last_name: '', city: '', state: '', zip_code: '' }, loading: false, error: null, success: null,
+                tab: 'login', form: { email: '', password: '', first_name: '', last_name: '', city: '', state: '', zip_code: '', token: '', new_password: '' }, loading: false, error: null, success: null,
                 async submitAuth() {
                     this.loading = true; this.error = null; this.success = null;
                     const fd = new FormData(); fd.append('email', this.form.email); fd.append('password', this.form.password);
+                    if (this.tab === 'reset') {
+                        fd.append('token', this.form.token);
+                        fd.append('new_password', this.form.new_password);
+                    }
                     if (this.tab === 'register') {
                         fd.append('first_name', this.form.first_name);
                         fd.append('last_name', this.form.last_name);
@@ -201,9 +239,25 @@ $history = array_slice($history, 0, 5);
                         fd.append('zip_code', this.form.zip_code);
                     }
                     try {
-                        const res = await fetch(`/api/auth.php?action=${this.tab}`, { method: 'POST', body: fd });
+                        let action = this.tab;
+                        if(this.tab === 'forgot') action = 'forgot_password';
+                        if(this.tab === 'reset') action = 'reset_password';
+
+                        const res = await fetch(`/api/auth.php?action=${action}`, { method: 'POST', body: fd });
                         const data = await res.json();
                         if (data.success) {
+                            if(this.tab === 'forgot') {
+                                this.success = data.message + (data.mock_token ? " (Mock Token: " + data.mock_token + ")" : "");
+                                this.tab = 'reset';
+                                this.loading = false;
+                                return;
+                            }
+                            if(this.tab === 'reset') {
+                                this.success = data.message;
+                                this.tab = 'login';
+                                this.loading = false;
+                                return;
+                            }
                             if (this.tab === 'login') window.location.reload();
                             else { this.success = data.message; this.form.password = ''; }
                         } else this.error = data.message;
@@ -240,6 +294,14 @@ $history = array_slice($history, 0, 5);
                             <button @click="currentView = 'my_jobs'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'my_jobs' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
                                 <i data-lucide="briefcase" class="mr-3 h-5 w-5 opacity-100"></i> My Jobs
                             </button>
+                            <button @click="currentView = 'my_resumes'; loadResumes(); setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'my_resumes' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                <i data-lucide="file-text" class="mr-3 h-5 w-5 opacity-100"></i> My Resumes
+                            </button>
+                            <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                            <button @click="currentView = 'admin_dashboard'; loadAdminData(); setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'admin_dashboard' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all mt-4">
+                                <i data-lucide="shield" class="mr-3 h-5 w-5 opacity-100 text-rose-400"></i> Admin Dashboard
+                            </button>
+                            <?php endif; ?>
                         </nav>
                     </div>
                     <div class="flex-shrink-0 flex border-t border-slate-700/50 p-4 bg-darkbg/30">
@@ -330,6 +392,18 @@ $history = array_slice($history, 0, 5);
                             <div x-show="showUploadModal" x-transition.opacity class="mt-4 p-5 bg-slate-800/50 border border-slate-700 rounded-2xl relative overflow-hidden" style="display:none;">
                                 <button @click="showUploadModal = false" class="absolute top-3 right-3 text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
                                 <h4 class="text-sm font-bold text-white mb-4">Upload New Category Resume</h4>
+
+                                <div class="grid grid-cols-1 gap-4 mb-4">
+                                    <div class="flex items-center gap-2">
+                                        <input type="text" x-model="linkedinUrl" placeholder="Or import from LinkedIn URL..." class="flex-1 bg-darkbg border border-slate-700 rounded-xl px-4 py-2 text-sm text-white outline-none focus:border-primary">
+                                        <button @click="importLinkedin" :disabled="importingLinkedin || !linkedinUrl.trim()" class="px-4 py-2 bg-[#0a66c2] text-white text-sm font-bold rounded-xl hover:bg-[#004182] transition-colors disabled:opacity-50 flex items-center shrink-0">
+                                            <i x-show="importingLinkedin" data-lucide="loader-2" class="w-4 h-4 mr-2 animate-spin"></i>
+                                            Import
+                                        </button>
+                                    </div>
+                                    <div class="text-center text-xs text-slate-500 font-bold uppercase tracking-widest my-1">- OR -</div>
+                                </div>
+
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <input type="file" x-ref="resumeUpload" class="text-sm text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-indigo-500" accept=".pdf">
                                     <input type="text" x-model="newCategory" placeholder="Category (e.g. Frontend Dev)" class="bg-darkbg border border-slate-700 rounded-xl px-4 py-2 text-sm text-white outline-none focus:border-primary">
@@ -419,13 +493,22 @@ $history = array_slice($history, 0, 5);
                             <textarea x-model="jobDescription" placeholder="Paste the job description here..." class="w-full bg-darkbg border border-slate-700 rounded-xl p-5 text-sm text-slate-300 outline-none focus:border-primary transition-all placeholder-slate-600 min-h-[200px] shadow-inner custom-scrollbar resize-y"></textarea>
                             
                             <!-- Notice activeResumeId handles disabling automatically if no resumes -->
-                            <div class="mt-8">
-                                <button @click="runOptimization" :disabled="analyzing || optimizing || resumes.length === 0 || !activeResumeId" class="w-full py-4 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-primary to-secondary shadow-[0_0_20px_rgba(99,102,241,0.3)] transition-all hover:-translate-y-1 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center">
+                            <div class="mt-8 flex flex-col md:flex-row gap-4">
+                                <button @click="runOptimization" :disabled="analyzing || optimizing || resumes.length === 0 || !activeResumeId" class="flex-1 py-4 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-primary to-secondary shadow-[0_0_20px_rgba(99,102,241,0.3)] transition-all hover:-translate-y-1 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center">
                                     <span x-show="!optimizing" class="flex items-center">
-                                        <i data-lucide="sparkles" class="mr-2 h-4 w-4"></i> Generate Cover Letter & Resume
+                                        <i data-lucide="sparkles" class="mr-2 h-4 w-4"></i> Generate Application Docs
                                     </span>
                                     <span x-show="optimizing" class="flex items-center" style="display:none;">
                                         <i data-lucide="loader-2" class="animate-spin mr-3 h-4 w-4 text-white"></i> Generating...
+                                    </span>
+                                </button>
+
+                                <button @click="runInterviewPrep" :disabled="interviewing || resumes.length === 0 || !activeResumeId || !jobDescription.trim()" class="flex-1 py-4 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-teal-500 to-emerald-500 shadow-lg transition-all hover:-translate-y-1 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center">
+                                    <span x-show="!interviewing" class="flex items-center">
+                                        <i data-lucide="message-circle" class="mr-2 h-4 w-4"></i> Mock Interview Prep
+                                    </span>
+                                    <span x-show="interviewing" class="flex items-center" style="display:none;">
+                                        <i data-lucide="loader-2" class="animate-spin mr-3 h-4 w-4 text-white"></i> Preparing...
                                     </span>
                                 </button>
                             </div>
@@ -781,7 +864,19 @@ $history = array_slice($history, 0, 5);
                                         <span x-show="item._saving" class="text-[10px] text-slate-400 flex items-center ml-2"><i data-lucide="loader-2" class="w-3 h-3 animate-spin mr-1"></i> Saving...</span>
                                     </div>
                                 </div>
-                                <p class="text-xs font-medium text-slate-500 mb-6" x-text="'Target Resume: ' + item.resume_name"></p>
+                                <p class="text-xs font-medium text-slate-500 mb-4" x-text="'Target Resume: ' + item.resume_name"></p>
+
+                                <div class="flex items-center gap-2 mb-4">
+                                    <label class="text-xs text-slate-400 font-bold uppercase tracking-wider">Stage:</label>
+                                    <select x-model="item._stage" @change="updateJobStage(item)" class="bg-darkbg border border-slate-700 text-white text-xs rounded-lg px-2 py-1 outline-none focus:border-primary">
+                                        <option value="wishlist">Wishlist</option>
+                                        <option value="applied">Applied</option>
+                                        <option value="interview">Interview</option>
+                                        <option value="offer">Offer</option>
+                                        <option value="rejected">Rejected</option>
+                                    </select>
+                                    <span x-show="item._savingStage" class="text-[10px] text-slate-400 flex items-center ml-2"><i data-lucide="loader-2" class="w-3 h-3 animate-spin mr-1"></i> Saving...</span>
+                                </div>
                                 
                                 <div class="space-y-4">
                                     <div class="flex flex-wrap gap-1">
@@ -827,7 +922,7 @@ $history = array_slice($history, 0, 5);
                                     </div>
                                     
                                     <!-- Add Note Interface -->
-                                    <div class="flex space-x-2">
+                                    <div class="flex space-x-2 mb-3">
                                         <select x-model="item._newNoteStatus" class="w-1/3 bg-darkbg border border-slate-700 rounded-lg px-2 py-1.5 text-[11px] text-slate-300 outline-none focus:border-primary">
                                             <option value="Custom">Note</option>
                                             <option value="Applied">Applied</option>
@@ -842,10 +937,10 @@ $history = array_slice($history, 0, 5);
                             </div>
                             <div class="p-4 bg-slate-800/50 border-t border-slate-700/50 space-y-3">
                                 <div class="flex space-x-2">
-                                    <button @click="downloadPDF(item.optimized_resume_text, 'resume')" class="flex-1 text-[10px] font-bold text-slate-300 uppercase tracking-widest hover:text-white hover:bg-slate-700 transition flex justify-center items-center bg-darkbg py-2 rounded-lg border border-slate-700 shadow-inner">
+                                    <button @click="downloadPDF(item.optimized_resume_text, 'resume', item.job_company, item.job_title)" class="flex-1 text-[10px] font-bold text-slate-300 uppercase tracking-widest hover:text-white hover:bg-slate-700 transition flex justify-center items-center bg-darkbg py-2 rounded-lg border border-slate-700 shadow-inner">
                                         <i data-lucide="file-text" class="w-3.5 h-3.5 mr-1.5"></i> Resume
                                     </button>
-                                    <button @click="item.cover_letter ? downloadPDF(item.cover_letter, 'cover_letter') : alert('Cover letter not generated.')" :class="item.cover_letter ? 'hover:text-white hover:bg-slate-700 text-slate-300 border-slate-700' : 'text-slate-600 border-slate-800 cursor-not-allowed'" class="flex-1 text-[10px] font-bold uppercase tracking-widest transition flex justify-center items-center bg-darkbg py-2 rounded-lg border shadow-inner">
+                                    <button @click="item.cover_letter ? downloadPDF(item.cover_letter, 'cover_letter', item.job_company, item.job_title) : alert('Cover letter not generated.')" :class="item.cover_letter ? 'hover:text-white hover:bg-slate-700 text-slate-300 border-slate-700' : 'text-slate-600 border-slate-800 cursor-not-allowed'" class="flex-1 text-[10px] font-bold uppercase tracking-widest transition flex justify-center items-center bg-darkbg py-2 rounded-lg border shadow-inner">
                                         <i data-lucide="mail" class="w-3.5 h-3.5 mr-1.5"></i> Cover Ltr
                                     </button>
                                 </div>
@@ -857,12 +952,23 @@ $history = array_slice($history, 0, 5);
                                         <i data-lucide="message-square" class="w-3.5 h-3.5 mr-1.5"></i> Ask AI
                                     </button>
                                 </div>
-                                <button @click="alert('Mock Interview feature coming soon!')" class="w-full text-[10px] font-bold text-amber-400 uppercase tracking-widest hover:text-white hover:bg-amber-500/20 transition flex justify-center items-center bg-amber-500/10 py-2.5 rounded-lg border border-amber-500/30">
-                                    <i data-lucide="mic" class="w-3.5 h-3.5 mr-1.5"></i> Mock Interview (Coming Soon)
+                                <button @click="jobDescription = item.job_description || ''; activeResumeId = item.resume_id; runInterviewPrep()" class="w-full text-[10px] font-bold text-emerald-400 uppercase tracking-widest hover:text-white hover:bg-emerald-500/20 transition flex justify-center items-center bg-emerald-500/10 py-2.5 rounded-lg border border-emerald-500/30">
+                                    <i data-lucide="mic" class="w-3.5 h-3.5 mr-1.5"></i> Mock Interview
                                 </button>
                             </div>
                         </div>
                     </template>
+
+                    <!-- Pagination Controls -->
+                    <div x-show="jobs.length > 0" class="flex justify-center items-center gap-4 mt-8">
+                        <button @click="jobFilters.page = Math.max(1, jobFilters.page - 1); fetchJobs()" :disabled="jobFilters.page === 1" class="p-3 bg-slate-800 border border-slate-700 hover:border-primary text-white rounded-xl disabled:opacity-50 transition">
+                            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                        </button>
+                        <span class="text-sm font-bold text-slate-400">Page <span x-text="jobFilters.page" class="text-white"></span></span>
+                        <button @click="jobFilters.page = jobFilters.page + 1; fetchJobs()" class="p-3 bg-slate-800 border border-slate-700 hover:border-primary text-white rounded-xl transition">
+                            <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -1085,6 +1191,191 @@ $history = array_slice($history, 0, 5);
                 </div>
             </div>
 
+
+            <!-- MY RESUMES VIEW -->
+            <div x-show="currentView === 'my_resumes'" class="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-12" style="display:none;" x-cloak>
+                <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div>
+                        <h1 class="text-3xl md:text-5xl font-extrabold text-white mb-3 tracking-tight drop-shadow-md">My Resumes</h1>
+                        <p class="text-slate-400 text-sm md:text-base font-medium max-w-2xl">Manage your work history, create AI-generated resumes, and edit existing documents.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Left Column: Work History -->
+                    <div class="lg:col-span-1 space-y-6">
+                        <div class="bg-card/80 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-6 shadow-2xl">
+                            <h3 class="text-xl font-bold text-white mb-2 flex items-center"><i data-lucide="book-open" class="w-5 h-5 mr-2 text-primary"></i>Work History</h3>
+                            <p class="text-xs text-slate-400 mb-4">Paste your full work history, skills, and achievements here. Our AI will use this to generate completely new, tailored resumes for you.</p>
+                            <textarea id="workHistoryTextarea" x-model="workHistory" rows="12" placeholder="Start typing your professional background here..." class="w-full bg-darkbg border border-slate-700 rounded-xl p-4 text-sm text-slate-300 outline-none focus:border-primary transition-all custom-scrollbar resize-y"></textarea>
+
+                            <div class="mt-4 flex gap-2">
+                                <button @click="saveWorkHistory()" class="flex-1 py-3 bg-primary text-white text-sm font-bold rounded-xl shadow-lg hover:bg-indigo-500 transition-all flex justify-center items-center">
+                                    <i data-lucide="save" class="w-4 h-4 mr-2"></i> Save History
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bg-card/80 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-6 shadow-2xl">
+                            <h3 class="text-lg font-bold text-white mb-2 flex items-center"><i data-lucide="wand-2" class="w-5 h-5 mr-2 text-secondary"></i>Generate New Resume</h3>
+                            <p class="text-xs text-slate-400 mb-4">Provide an optional job description to tailor the generated resume, or leave blank for a general one.</p>
+                            <textarea x-model="resumeGenJobDesc" rows="4" placeholder="Target job description (optional)" class="w-full bg-darkbg border border-slate-700 rounded-xl p-3 text-xs text-slate-300 outline-none focus:border-primary transition-all custom-scrollbar resize-y mb-4"></textarea>
+                            <button @click="generateResumeFromHistory()" :disabled="genResumeBusy || !workHistory.trim()" class="w-full py-3 bg-gradient-to-r from-secondary to-pink-500 text-white text-sm font-bold rounded-xl shadow-lg hover:opacity-90 transition-all flex justify-center items-center disabled:opacity-50">
+                                <span x-show="!genResumeBusy" class="flex items-center"><i data-lucide="sparkles" class="w-4 h-4 mr-2"></i> AI Generate</span>
+                                <span x-show="genResumeBusy" class="flex items-center" style="display:none;"><i data-lucide="loader-2" class="w-4 h-4 mr-2 animate-spin"></i> Generating...</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Saved Resumes & Editor -->
+                    <div class="lg:col-span-2 space-y-6">
+
+                        <!-- List of Resumes -->
+                        <div x-show="!editingResume" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <template x-if="resumes.length === 0">
+                                <div class="col-span-full p-10 text-center border border-slate-700/50 rounded-2xl bg-card/40">
+                                    <p class="text-slate-400 text-sm">No resumes found. Upload one or generate a new one from your work history.</p>
+                                </div>
+                            </template>
+                            <template x-for="res in resumes" :key="res.id">
+                                <div class="bg-card border border-slate-700/50 rounded-2xl p-5 hover:border-slate-500 transition-all relative group">
+                                    <div class="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button @click="editResume(res)" class="p-1.5 bg-blue-500/20 text-blue-400 hover:bg-blue-500/40 rounded-lg"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                                        <button @click="deleteResume(res.id)" class="p-1.5 bg-red-500/20 text-red-400 hover:bg-red-500/40 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                    </div>
+                                    <h4 class="text-white font-bold mb-1 truncate pr-16" x-text="res.filename"></h4>
+                                    <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase mb-4" :class="res.is_primary ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' : 'bg-slate-700/50 text-slate-400 border border-slate-700'" x-text="res.is_primary ? 'Primary' : res.category"></span>
+
+                                    <div class="space-y-1 mt-auto">
+                                        <p class="text-[10px] text-slate-500 flex items-center"><i data-lucide="calendar" class="w-3 h-3 mr-1.5"></i> Created: <span class="ml-1" x-text="new Date(res.upload_date).toLocaleDateString()"></span></p>
+                                        <p class="text-[10px] text-slate-500 flex items-center"><i data-lucide="clock" class="w-3 h-3 mr-1.5"></i> Updated: <span class="ml-1" x-text="res.updated_at ? new Date(res.updated_at).toLocaleDateString() : new Date(res.upload_date).toLocaleDateString()"></span></p>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+
+                        <!-- Full Screen Editor (Tiptap) -->
+                        <div x-show="editingResume" class="bg-card/90 border border-slate-700 rounded-3xl p-6 shadow-2xl flex flex-col h-[700px]" style="display:none;">
+                            <div class="flex justify-between items-center mb-4 pb-4 border-b border-slate-700/50">
+                                <div>
+                                    <h3 class="text-xl font-bold text-white mb-1" x-text="'Editing: ' + (currentResume?.filename || '')"></h3>
+                                    <p class="text-xs text-slate-400">Make changes or get AI suggestions</p>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button @click="getAISuggestions()" :disabled="aiSuggestionsBusy" class="px-4 py-2 bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500/40 border border-indigo-500/30 rounded-xl text-sm font-bold transition flex items-center">
+                                        <span x-show="!aiSuggestionsBusy" class="flex items-center"><i data-lucide="lightbulb" class="w-4 h-4 mr-2"></i>AI Suggestions</span>
+                                        <span x-show="aiSuggestionsBusy" class="flex items-center" style="display:none;"><i data-lucide="loader-2" class="w-4 h-4 mr-2 animate-spin"></i>Thinking...</span>
+                                    </button>
+                                    <button @click="saveEditedResume()" class="px-4 py-2 bg-primary hover:bg-indigo-500 text-white rounded-xl text-sm font-bold transition flex items-center">
+                                        <i data-lucide="save" class="w-4 h-4 mr-2"></i>Save
+                                    </button>
+                                    <button @click="closeEditor()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-xl text-sm font-bold transition flex items-center">
+                                        <i data-lucide="x" class="w-4 h-4 mr-2"></i>Close
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Editor Container -->
+                            <div class="flex-1 bg-white rounded-xl overflow-hidden text-black editor-container prose max-w-none">
+                                <div id="tiptap-editor" class="h-full w-full p-4 overflow-y-auto"></div>
+                            </div>
+
+                            <!-- AI Suggestions Panel -->
+                            <div x-show="aiSuggestions" class="mt-4 p-4 bg-indigo-900/20 border border-indigo-500/30 rounded-xl relative">
+                                <button @click="aiSuggestions = null" class="absolute top-2 right-2 text-indigo-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+                                <h4 class="text-sm font-bold text-indigo-400 mb-2 flex items-center"><i data-lucide="sparkles" class="w-4 h-4 mr-2"></i>AI Improvement Suggestions</h4>
+                                <div class="text-sm text-slate-300 whitespace-pre-wrap" x-text="aiSuggestions"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- Admin Dashboard View -->
+
+            <div x-show="currentView === 'admin_dashboard'" class="p-6 md:p-10 max-w-7xl mx-auto w-full h-full overflow-y-auto custom-scrollbar" style="display:none;">
+                <div class="flex items-center mb-10">
+                    <div class="w-12 h-12 bg-gradient-to-br from-rose-500 to-orange-500 rounded-2xl flex items-center justify-center shadow-lg border border-white/10 shrink-0">
+                        <i data-lucide="shield" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <div class="ml-4">
+                        <h1 class="text-3xl font-extrabold text-white tracking-tight">Admin Dashboard</h1>
+                        <p class="text-slate-400 mt-1">System stats and user management</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+                    <div class="bg-card/80 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-6 shadow-xl">
+                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Total AI Optimizations</h3>
+                        <p class="text-4xl font-extrabold text-white" x-text="adminStats.total_ai_optimizations || 0"></p>
+                    </div>
+                    <div class="bg-card/80 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-6 shadow-xl">
+                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Disk Free Space</h3>
+                        <p class="text-4xl font-extrabold text-white" x-text="formatBytes(adminStats.disk_free_space || 0)"></p>
+                    </div>
+                </div>
+
+                <div class="bg-card/80 backdrop-blur-xl border border-slate-700/50 rounded-3xl shadow-xl overflow-hidden">
+                    <div class="px-6 py-5 border-b border-slate-700/50">
+                        <h3 class="text-lg font-bold text-white">User Management</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-800/50 text-slate-400 border-b border-slate-700/50">
+                                <tr>
+                                    <th class="px-6 py-4 font-semibold">Email</th>
+                                    <th class="px-6 py-4 font-semibold">Role</th>
+                                    <th class="px-6 py-4 font-semibold">Status</th>
+                                    <th class="px-6 py-4 font-semibold">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-700/50 text-slate-300">
+                                <template x-for="user in adminUsers" :key="user.id">
+                                    <tr class="hover:bg-slate-800/20 transition">
+                                        <td class="px-6 py-4 font-medium text-white" x-text="user.email"></td>
+                                        <td class="px-6 py-4" x-text="user.role"></td>
+                                        <td class="px-6 py-4">
+                                            <span x-show="user.is_active == 1" class="px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-xs font-bold">Active</span>
+                                            <span x-show="user.is_active == 0" class="px-2.5 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full text-xs font-bold">Pending</span>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <button x-show="user.is_active == 0" @click="approveUser(user.id)" class="text-xs font-bold text-primary hover:text-white transition px-3 py-1.5 border border-primary/30 rounded-lg hover:bg-primary/20">Approve</button>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interview Prep Modal -->
+            <div x-show="interviewModal" class="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6" style="display:none;">
+                <div x-show="interviewModal" x-transition.opacity class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm" @click="interviewModal = false"></div>
+                <div x-show="interviewModal" x-transition.scale class="relative w-full max-w-4xl bg-card border border-slate-700/50 rounded-3xl shadow-2xl flex flex-col max-h-[90vh]">
+                    <div class="px-6 py-5 border-b border-slate-700/50 flex justify-between items-center bg-slate-800/50 rounded-t-3xl">
+                        <h3 class="text-lg font-extrabold text-white flex items-center"><i data-lucide="message-circle" class="w-5 h-5 mr-3 text-emerald-400"></i>Mock Interview Prep</h3>
+                        <button @click="interviewModal = false" class="text-slate-400 hover:text-white transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+                    </div>
+                    <div class="p-6 overflow-y-auto custom-scrollbar flex-1 space-y-6">
+                        <template x-for="(q, i) in interviewQuestions" :key="i">
+                            <div class="bg-darkbg border border-slate-700 rounded-2xl p-5 relative overflow-hidden group">
+                                <div class="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
+                                <h4 class="text-base font-bold text-emerald-400 mb-2">Q<span x-text="i+1"></span>: <span x-text="q.question" class="text-white"></span></h4>
+                                <div class="bg-slate-800/50 rounded-xl p-3 mb-3 border border-slate-700">
+                                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Why they ask this</p>
+                                    <p class="text-sm text-slate-300" x-text="q.why"></p>
+                                </div>
+                                <div class="bg-primary/5 border border-primary/20 rounded-xl p-4">
+                                    <p class="text-xs font-bold text-primary uppercase tracking-wider mb-2 flex items-center"><i data-lucide="check-circle-2" class="w-3 h-3 mr-1"></i> Suggested STAR Answer</p>
+                                    <p class="text-sm text-slate-200 whitespace-pre-wrap leading-relaxed" x-text="q.answer_outline"></p>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
         </main>
 
     </div>
@@ -1092,10 +1383,51 @@ $history = array_slice($history, 0, 5);
 
 
     <script>
+        let csrfToken = '';
+        async function fetchCsrfToken() {
+            const res = await fetch('/api/csrf.php');
+            const data = await res.json();
+            csrfToken = data.csrf_token;
+        }
+
+        // Wrapper for fetch to auto-include CSRF
+        const originalFetch = window.fetch;
+        window.fetch = async function() {
+            let [resource, config] = arguments;
+            if (!config) config = {};
+
+            if (config.method && ['POST', 'PUT', 'DELETE'].includes(config.method.toUpperCase())) {
+                if (config.body instanceof FormData) {
+                    config.body.append('csrf_token', csrfToken);
+                } else if (typeof config.body === 'string') {
+                    try {
+                        const data = JSON.parse(config.body);
+                        data.csrf_token = csrfToken;
+                        config.body = JSON.stringify(data);
+                    } catch(e) {}
+                }
+
+                if (!config.headers) config.headers = {};
+                config.headers['X-CSRF-Token'] = csrfToken;
+            }
+
+            return originalFetch(resource, config);
+        };
+        fetchCsrfToken();
+
         function dashboardApp() {
             return {
                 currentView: localStorage.getItem('jobpulse_last_view') || 'vibe_check',
                 candidateName: '',
+
+                formatBytes(bytes, decimals = 2) {
+                    if (!+bytes) return '0 Bytes';
+                    const k = 1024;
+                    const dm = decimals < 0 ? 0 : decimals;
+                    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+                    const i = Math.floor(Math.log(bytes) / Math.log(k));
+                    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+                },
 
                 // Client-side markdown renderer
                 renderMarkdown(text) {
@@ -1231,6 +1563,16 @@ $history = array_slice($history, 0, 5);
                 // Analysis State
                 showAnalysisModal: false,
                 analysisBusy: false,
+
+                // My Resumes State
+                workHistory: '',
+                resumeGenJobDesc: '',
+                genResumeBusy: false,
+                editingResume: false,
+                currentResume: null,
+                aiSuggestionsBusy: false,
+                aiSuggestions: null,
+                tiptapInstance: null,
 
                 autoGen: localStorage.getItem('jobpulse_autogen') === 'true',
 
@@ -1655,6 +1997,9 @@ $history = array_slice($history, 0, 5);
 
                 analyzing: false,
                 optimizing: false,
+                interviewing: false,
+                interviewModal: false,
+                interviewQuestions: [],
                 analyzeError: null,
 
                 latestResult: null,         // For Vibe Check / Cover Letter
@@ -1675,11 +2020,73 @@ $history = array_slice($history, 0, 5);
                 // Adzuna Job Search State
                 jobs: [],
                 jobsLoading: false,
+                adminUsers: [],
+                adminStats: {},
+                importingLinkedin: false,
+                linkedinUrl: '',
+
+                async importLinkedin() {
+                    if (!this.linkedinUrl.trim()) return;
+                    this.importingLinkedin = true;
+                    this.uploadError = null;
+
+                    try {
+                        const fd = new FormData();
+                        fd.append('linkedin_url', this.linkedinUrl);
+
+                        const res = await fetch('/api/import_linkedin.php', { method: 'POST', body: fd });
+                        const data = await res.json();
+
+                        if (data.success) {
+                            this.showUploadModal = false;
+                            this.linkedinUrl = '';
+                            await this.fetchResumes();
+                        } else {
+                            this.uploadError = data.error || 'Failed to import LinkedIn profile.';
+                        }
+                    } catch(e) {
+                        this.uploadError = 'Network error during import.';
+                    } finally {
+                        this.importingLinkedin = false;
+                    }
+                },
+
+                async loadAdminData() {
+                    try {
+                        const [uRes, sRes] = await Promise.all([
+                            fetch('/api/admin.php?action=list_users'),
+                            fetch('/api/admin.php?action=system_stats')
+                        ]);
+                        const uData = await uRes.json();
+                        const sData = await sRes.json();
+                        if (uData.success) this.adminUsers = uData.users;
+                        if (sData.success) this.adminStats = sData.stats;
+                    } catch (e) {
+                        console.error(e);
+                    }
+                },
+
+                async approveUser(userId) {
+                    try {
+                        const fd = new FormData();
+                        fd.append('user_id', userId);
+                        const res = await fetch('/api/admin.php?action=approve_user', { method: 'POST', body: fd });
+                        const data = await res.json();
+                        if (data.success) {
+                            this.loadAdminData();
+                        } else {
+                            alert(data.error || 'Failed to approve user.');
+                        }
+                    } catch (e) {
+                        alert('Network Error');
+                    }
+                },
                 jobFilters: {
                     query: '',
                     location: '',
                     remote: false,
-                    hybrid: false
+                    hybrid: false,
+                    page: 1
                 },
 
                 init() {
@@ -1687,6 +2094,7 @@ $history = array_slice($history, 0, 5);
                     this.$watch('currentView', (view) => {
                         localStorage.setItem('jobpulse_last_view', view);
                         if (view === 'my_jobs') this.fetchHistory();
+                        if (view === 'my_resumes') { this.fetchResumes(); this.fetchWorkHistory(); }
                         if (view === 'find_jobs') this.fetchJobs();
                         if (view === 'vibe_check') this.fetchResumes();
                         
@@ -1697,6 +2105,7 @@ $history = array_slice($history, 0, 5);
 
                     // Initial fetch for the starting view
                     if (this.currentView === 'my_jobs') this.fetchHistory();
+                    if (this.currentView === 'my_resumes') { this.fetchResumes(); this.fetchWorkHistory(); }
                     if (this.currentView === 'find_jobs') this.fetchJobs();
                     if (this.currentView === 'vibe_check') this.fetchResumes();
 
@@ -1706,6 +2115,139 @@ $history = array_slice($history, 0, 5);
                     });
                 },
 
+
+                async fetchWorkHistory() {
+                    try {
+                        const res = await fetch('/api/work_history.php');
+                        const data = await res.json();
+                        if(data.success) this.workHistory = data.work_history || '';
+                    } catch(e) {}
+                },
+                async saveWorkHistory() {
+                    try {
+                        const res = await fetch('/api/work_history.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ work_history: this.workHistory })
+                        });
+                        const data = await res.json();
+                        if(data.success) alert('Work history saved!');
+                        else alert('Error saving work history');
+                    } catch(e) { alert('Network error'); }
+                },
+                async generateResumeFromHistory() {
+                    if (!this.workHistory.trim()) return alert("Please enter your work history first.");
+                    this.genResumeBusy = true;
+                    try {
+                        const res = await fetch('/api/generate_resume.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ work_history: this.workHistory, job_description: this.resumeGenJobDesc })
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                            alert('Resume generated successfully!');
+                            await this.fetchResumes();
+                        } else {
+                            alert(data.error || 'Failed to generate resume.');
+                        }
+                    } catch(e) {
+                        alert('Network error during generation.');
+                    } finally {
+                        this.genResumeBusy = false;
+                    }
+                },
+                async editResume(res) {
+                    this.editingResume = true;
+                    this.currentResume = res;
+                    this.aiSuggestions = null;
+
+                    // Fetch full resume text
+                    const fetchRes = await fetch(`/api/resumes.php?action=get_full&id=${res.id}`);
+                    const data = await fetchRes.json();
+                    let text = res.extracted_text || '';
+                    if(data.success && data.resume) text = data.resume.text || '';
+
+                    // Convert plain text to HTML for Tiptap if it's not HTML already
+                    let htmlContent = text;
+                    if (!/<[a-z][\s\S]*>/i.test(text)) {
+                        htmlContent = text.split('\n').map(line => `<p>${line}</p>`).join('');
+                    }
+
+                    if(this.tiptapInstance) {
+                        this.tiptapInstance.destroy();
+                    }
+
+                    this.tiptapInstance = new window.TiptapEditor({
+                        element: document.querySelector('#tiptap-editor'),
+                        extensions: [window.TiptapStarterKit],
+                        content: htmlContent,
+                        editorProps: {
+                            attributes: {
+                                class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none h-full w-full',
+                            },
+                        },
+                    });
+                },
+                closeEditor() {
+                    this.editingResume = false;
+                    if(this.tiptapInstance) {
+                        this.tiptapInstance.destroy();
+                        this.tiptapInstance = null;
+                    }
+                },
+                async saveEditedResume() {
+                    if(!this.tiptapInstance || !this.currentResume) return;
+                    const htmlContent = this.tiptapInstance.getHTML();
+
+                    try {
+                        const res = await fetch('/api/resumes.php', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({
+                                action: 'update',
+                                resume_id: this.currentResume.id,
+                                filename: this.currentResume.filename,
+                                category: this.currentResume.category,
+                                extracted_text: htmlContent
+                            })
+                        });
+                        const data = await res.json();
+                        if(data.success) {
+                            alert("Resume updated successfully!");
+                            await this.fetchResumes();
+                            this.closeEditor();
+                        } else {
+                            alert(data.error || "Failed to update resume.");
+                        }
+                    } catch(e) {
+                        alert("Network error saving resume.");
+                    }
+                },
+                async getAISuggestions() {
+                    if(!this.tiptapInstance) return;
+                    this.aiSuggestionsBusy = true;
+                    this.aiSuggestions = null;
+
+                    const textContent = this.tiptapInstance.getText();
+                    try {
+                        const res = await fetch('/api/suggest_improvements.php', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ resume_text: textContent })
+                        });
+                        const data = await res.json();
+                        if(data.success) {
+                            this.aiSuggestions = data.suggestions;
+                        } else {
+                            alert(data.error || "Failed to get suggestions.");
+                        }
+                    } catch(e) {
+                        alert("Network error getting suggestions.");
+                    } finally {
+                        this.aiSuggestionsBusy = false;
+                    }
+                },
                 async fetchHistory() {
                     try {
                         const res = await fetch('/api/history.php');
@@ -1750,7 +2292,8 @@ $history = array_slice($history, 0, 5);
                             q: this.jobFilters.query,
                             l: this.jobFilters.location,
                             remote: this.jobFilters.remote,
-                            hybrid: this.jobFilters.hybrid
+                            hybrid: this.jobFilters.hybrid,
+                            page: this.jobFilters.page
                         });
                         
                         const res = await fetch(`/api/search_jobs.php?${params.toString()}`);
@@ -1819,7 +2362,7 @@ $history = array_slice($history, 0, 5);
                     fd.append('category', this.newCategory || 'General');
                     
                     try {
-                        const res = await fetch('/api/upload_resume.php', { method: 'POST', body: fd });
+                        const res = await fetch('/api/upload_resume.php', { method: 'POST', body: fd, headers: { 'X-CSRF-Token': this.csrfToken } });
                         const data = await res.json();
                         if (data.success) {
                             this.showUploadModal = false;
@@ -1861,6 +2404,36 @@ $history = array_slice($history, 0, 5);
                 },
                 
 
+
+                async runInterviewPrep() {
+                    if (!this.jobDescription.trim() || !this.activeResumeId) return;
+                    this.interviewing = true;
+                    this.interviewModal = false;
+                    this.interviewQuestions = [];
+
+                    try {
+                        const res = await fetch('/api/interview_prep.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                job_description: this.jobDescription,
+                                resume_id: this.activeResumeId
+                            })
+                        });
+                        const data = await res.json();
+
+                        if (data.success && data.questions) {
+                            this.interviewQuestions = data.questions;
+                            this.interviewModal = true;
+                        } else {
+                            alert(data.error || 'Failed to prepare interview mock.');
+                        }
+                    } catch (e) {
+                        alert('Network error occurred.');
+                    } finally {
+                        this.interviewing = false;
+                    }
+                },
 
                 async runOptimization() {
                     const textContent = this.jobDescription;
@@ -2004,7 +2577,7 @@ $history = array_slice($history, 0, 5);
                     }
                 },
 
-                async downloadPDF(content, type) {
+                async downloadPDF(content, type, company = '', role = '') {
                     if (!content) return;
                     try {
                         const res = await fetch('/api/prepare_download.php', {
@@ -2014,9 +2587,9 @@ $history = array_slice($history, 0, 5);
                                 content,
                                 type,
                                 format: 'pdf',
-                                is_html: this.finalResultObj?._isHTML || false,
-                                company: this.finalResultObj?.job_company || '',
-                                role: this.finalResultObj?.job_title || '',
+                                is_html: false, // Since markdown is rendered server-side now or assume text
+                                company: company || this.finalResultObj?.job_company || '',
+                                role: role || this.finalResultObj?.job_title || '',
                                 name: this.candidateName
                             })
                         });
@@ -2117,6 +2690,22 @@ $history = array_slice($history, 0, 5);
                     item._saving = false;
                 },
 
+                async updateJobStage(item) {
+                    item._savingStage = true;
+                    try {
+                        const res = await fetch(`/api/jobs.php?id=${item.id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id: item.id, status: item._stage })
+                        });
+                        const data = await res.json();
+                        if (!res.ok) alert(data.error || 'Failed to update stage');
+                    } catch(e) {
+                        alert("Network error updating stage");
+                    } finally {
+                        item._savingStage = false;
+                    }
+                },
                 async addJobNote(item) {
                     const status = item._newNoteStatus || 'Custom';
                     const text = item._newNoteText || '';

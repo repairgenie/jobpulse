@@ -1,39 +1,44 @@
 <?php
-ob_start();
 session_start();
+require_once __DIR__ . '/../bootstrap.php';
+require_once __DIR__ . '/../src/User.php';
+require_once __DIR__ . '/../src/Security.php';
 
-if (!defined('DATA_DIR')) define('DATA_DIR', __DIR__ . '/../data');
-$usersFile = DATA_DIR . '/users.json';
+use App\User;
+use App\Security;
 
 header('Content-Type: application/json');
 
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
-    exit(json_encode(['success' => false, 'error' => 'Unauthorized']));
+    echo json_encode(['success' => false, 'error' => 'Unauthorized']);
+    die();
 }
 
+Security::checkCsrf();
+
 $input = json_decode(file_get_contents('php://input'), true);
+$prefs = $input['preferences'] ?? $input;
 
-if (isset($input['auto_generate_docs'])) {
-    if (file_exists($usersFile)) {
-        $users = json_decode(file_get_contents($usersFile), true) ?: [];
-        $userId = $_SESSION['user_id'];
+$userObj = new User();
+$users = json_decode(file_get_contents(USERS_FILE), true);
+$updated = false;
 
-        $found = false;
-        foreach ($users as &$user) {
-            if (isset($user['id']) && $user['id'] === $userId) {
-                $user['auto_generate_docs'] = filter_var($input['auto_generate_docs'], FILTER_VALIDATE_BOOLEAN);
-                $found = true;
-                break;
-            }
-        }
-
-        if ($found) {
-            file_put_contents($usersFile, json_encode($users, JSON_PRETTY_PRINT));
-            echo json_encode(['success' => true]);
-            exit;
-        }
+foreach ($users as &$user) {
+    if ($user['id'] === $_SESSION['user_id']) {
+        if (isset($prefs['job_keywords'])) $user['job_keywords'] = $prefs['job_keywords'];
+        if (isset($prefs['city'])) $user['city'] = $prefs['city'];
+        if (isset($prefs['remote_only'])) $user['remote_only'] = (bool)$prefs['remote_only'];
+        if (isset($prefs['auto_generate_docs'])) $user['auto_generate_docs'] = (bool)$prefs['auto_generate_docs'];
+        $updated = true;
+        break;
     }
 }
 
-echo json_encode(['success' => false, 'error' => 'Invalid request or user not found.']);
+if ($updated) {
+    file_put_contents(USERS_FILE, json_encode($users, JSON_PRETTY_PRINT));
+    echo json_encode(['success' => true, 'message' => 'Preferences updated.']);
+} else {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'error' => 'User not found.']);
+}

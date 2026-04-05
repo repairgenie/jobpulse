@@ -24,23 +24,30 @@ class ResumeManager
         return $dir;
     }
 
-    public function saveResume(string $userId, string $filename, string $extractedText, string $category = 'General'): array
+
+    public function saveResume(string $userId, string $filename, string $extractedText, string $category = 'General', string $id = null): array
     {
         $userDir = $this->getUserDir($userId);
         
-        // If this is the user's first resume, make it primary automatically
         $existingResumes = $this->getResumes($userId);
         $isPrimary = empty($existingResumes) ? true : false;
         
-        $resumeId = uniqid('res_');
+        $resumeId = $id ?: uniqid('res_');
         $filePath = $userDir . '/' . $resumeId . '.json';
         
+        $existingData = [];
+        if (file_exists($filePath)) {
+            $existingData = json_decode(file_get_contents($filePath), true);
+            $isPrimary = $existingData['is_primary'] ?? false;
+        }
+
         $data = [
             'id' => $resumeId,
             'filename' => $filename,
             'category' => $category,
             'is_primary' => $isPrimary,
-            'upload_date' => date('Y-m-d H:i:s'),
+            'upload_date' => $existingData['upload_date'] ?? date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s'),
             'extracted_text' => $extractedText
         ];
         
@@ -48,6 +55,7 @@ class ResumeManager
         
         return $data;
     }
+
 
     public function getResumes(string $userId): array
     {

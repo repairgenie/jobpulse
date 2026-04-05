@@ -32,6 +32,8 @@ $query = $_GET['q'] ?? '';
 $location = $_GET['l'] ?? '';
 $remote = filter_var($_GET['remote'] ?? false, FILTER_VALIDATE_BOOLEAN);
 $hybrid = filter_var($_GET['hybrid'] ?? false, FILTER_VALIDATE_BOOLEAN);
+$page = (int)($_GET['page'] ?? 1);
+if ($page < 1) $page = 1;
 
 $userObj = new User();
 
@@ -76,7 +78,7 @@ if (ADZUNA_APP_ID === 'your_adzuna_app_id' || ADZUNA_APP_ID === 'PLACEHOLDER' ||
 }
 
 // Live Adzuna API Call
-$baseUrl = "https://api.adzuna.com/v1/api/jobs/us/search/1";
+$baseUrl = "https://api.adzuna.com/v1/api/jobs/us/search/{$page}";
 $queryParams = [
     'app_id' => ADZUNA_APP_ID,
     'app_key' => ADZUNA_APP_KEY,

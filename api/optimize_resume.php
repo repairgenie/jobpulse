@@ -31,6 +31,14 @@ if (empty(trim($jobDescription))) {
     exit;
 }
 
+require_once __DIR__ . '/../src/Security.php';
+if (!\App\Security::rateLimit('optimize_' . $_SESSION['user_id'], 5, 300)) { // 5 optimizations per 5 minutes
+    http_response_code(429);
+    echo json_encode(['success' => false, 'error' => 'Rate limit exceeded. Please wait before optimizing again.']);
+    exit;
+}
+\App\Security::checkCsrf();
+
 $userId = $_SESSION['user_id'];
 
 try {

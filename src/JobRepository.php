@@ -111,6 +111,12 @@ class JobRepository
         ]);
     }
 
+    public function updateStatus(int $id, string $status): bool
+    {
+        $stmt = $this->db->prepare("UPDATE jobs SET status = :status WHERE id = :id");
+        return $stmt->execute(['id' => $id, 'status' => $status]);
+    }
+
     public function delete(int $id): bool
     {
         $stmt = $this->db->prepare("DELETE FROM jobs WHERE id = :id");

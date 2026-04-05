@@ -32,32 +32,37 @@ $placeholders = ['(Unknown Company)', '(Untitled)', 'Unknown Company', 'Untitled
 if (in_array(trim($company), $placeholders, true)) $company = '';
 if (in_array(trim($role),    $placeholders, true)) $role    = '';
 
-// Build a clean filename prefix: company_role
-function slugify(string $s): string {
+// Build a clean filename prefix: FirstName LastName Company Role
+function sanitizeFilename(string $s): string {
     $s = trim($s);
-    $s = preg_replace('/[^a-zA-Z0-9\s\-]/', '', $s); // strip special chars, keep hyphens
-    $s = preg_replace('/\s+/', '_', $s);               // spaces → underscores
+    $s = preg_replace('/[^a-zA-Z0-9\s\-]/', '', $s); // strip special chars, keep hyphens and spaces
+    $s = preg_replace('/\s+/', ' ', $s);               // normalize spaces
     return substr($s, 0, 50);                         // truncate to 50 chars
 }
-$companySlug = slugify($company) ?: 'Company';
-$roleSlug    = slugify($role)    ?: 'Position';
-$passedNameSlug = slugify($name);
-$userFName   = slugify($_SESSION['first_name'] ?? '');
-$userLName   = slugify($_SESSION['last_name']  ?? '');
 
-$dateStamp   = date('Y-m-d') . '-' . time();
+$companyStr = sanitizeFilename($company);
+$roleStr    = sanitizeFilename($role);
+$passedNameStr = sanitizeFilename($name);
+$userFName   = sanitizeFilename($_SESSION['first_name'] ?? '');
+$userLName   = sanitizeFilename($_SESSION['last_name']  ?? '');
 
-$prefixParts = [$companySlug, $roleSlug];
+$prefixParts = [];
 
 // Prioritize passed name (e.g. extracted from AI), then session names
-if ($passedNameSlug) {
-    $prefixParts[] = $passedNameSlug;
+if ($passedNameStr) {
+    $prefixParts[] = $passedNameStr;
 } else {
     if ($userFName) $prefixParts[] = $userFName;
     if ($userLName) $prefixParts[] = $userLName;
 }
 
-$prefix      = implode('_', $prefixParts);
+if ($companyStr) $prefixParts[] = $companyStr;
+if ($roleStr) $prefixParts[] = $roleStr;
+
+$prefix = implode(' ', $prefixParts);
+if (empty(trim($prefix))) {
+    $prefix = 'Application';
+}
 
 if (empty(trim($content))) {
     http_response_code(400);
@@ -124,7 +129,7 @@ function parseMarkdownToHTML($text) {
 }
 
 if ($format === 'pdf') {
-    $filename = "{$prefix}__{$type}_{$dateStamp}.pdf";
+    $filename = "{$prefix} ".ucfirst($type).".pdf";
     $mime = 'application/pdf';
 
     $htmlContent = $isHtml ? $content : parseMarkdownToHTML($content);
@@ -142,7 +147,7 @@ if ($format === 'pdf') {
         exit(json_encode(['success' => false, 'error' => 'PDF Error: ' . $e->getMessage()]));
     }
 } elseif ($format === 'combined') {
-    $filename = "{$prefix}__application_{$dateStamp}.pdf";
+    $filename = "{$prefix} Application.pdf";
     $mime = 'application/pdf';
     $coverLetter = $input['cover_letter'] ?? '';
 
@@ -168,7 +173,7 @@ if ($format === 'pdf') {
         exit(json_encode(['success' => false, 'error' => 'Combined PDF Error: ' . $e->getMessage()]));
     }
 } else {
-    $filename = "{$prefix}__application_{$dateStamp}.txt";
+    $filename = "{$prefix} Application.txt";
     $mime = 'text/plain';
     
     if ($isHtml) {
