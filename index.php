@@ -48,6 +48,7 @@ $history = array_slice($history, 0, 5);
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         /* Scrollbar */
@@ -69,6 +70,16 @@ $history = array_slice($history, 0, 5);
         .prose-analysis blockquote { border-left: 3px solid #6366f1; padding: 0.5rem 1rem; background: rgba(99,102,241,0.07); border-radius: 0 8px 8px 0; margin: 1rem 0; color: #94a3b8; font-style: italic; }
         /* code inline */
         .prose-analysis code { background: rgba(99,102,241,0.15); color: #a5b4fc; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.8rem; font-family: monospace; }
+        
+        /* High-contrast styles for light paper resumes */
+        .prose-paper h1 { font-size: 2.2rem; font-weight: 800; color: #0f172a; margin: 1.5rem 0 0.5rem; text-align: center; border-bottom: 2px solid #6366f1; padding-bottom: 0.5rem; }
+        .prose-paper h2 { font-size: 1.35rem; font-weight: 700; color: #1e293b; margin: 1.8rem 0 0.8rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.2rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .prose-paper h3 { font-size: 1.1rem; font-weight: 700; color: #334155; margin: 1.2rem 0 0.4rem; }
+        .prose-paper p  { color: #334155; line-height: 1.6; margin-bottom: 0.8rem; font-size: 1rem; }
+        .prose-paper ul { margin: 0.5rem 0 1rem 1.5rem; list-style-type: disc; }
+        .prose-paper li { color: #334155; font-size: 1rem; line-height: 1.5; margin-bottom: 0.4rem; }
+        .prose-paper strong { color: #0f172a; font-weight: 700; }
+        .prose-paper hr { border: none; border-top: 2px solid #f1f5f9; margin: 1.5rem 0; }
         
         .custom-scrollbar-light::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar-light::-webkit-scrollbar-track { background: #f1f5f9; }
@@ -1259,18 +1270,18 @@ $history = array_slice($history, 0, 5);
 
                         <!-- Editor Toolbar -->
                         <div class="flex items-center flex-wrap gap-1 px-4 py-2 border-b border-slate-700/50 bg-slate-800/40 shrink-0">
-                            <button @click="resumeEditorInstance && resumeEditorInstance.chain().focus().toggleHeading({ level: 1 }).run()" class="p-2 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition" title="Heading 1"><i data-lucide="heading-1" class="w-4 h-4"></i></button>
-                            <button @click="resumeEditorInstance && resumeEditorInstance.chain().focus().toggleHeading({ level: 2 }).run()" class="p-2 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition" title="Heading 2"><i data-lucide="heading-2" class="w-4 h-4"></i></button>
+                            <button @click="resumeEditorInstance && Alpine.raw(resumeEditorInstance).chain().focus().toggleHeading({ level: 1 }).run()" class="p-2 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition" title="Heading 1"><i data-lucide="heading-1" class="w-4 h-4"></i></button>
+                            <button @click="resumeEditorInstance && Alpine.raw(resumeEditorInstance).chain().focus().toggleHeading({ level: 2 }).run()" class="p-2 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition" title="Heading 2"><i data-lucide="heading-2" class="w-4 h-4"></i></button>
                             <div class="w-px h-4 bg-slate-700 mx-1"></div>
-                            <button @click="resumeEditorInstance && resumeEditorInstance.chain().focus().toggleBold().run()" class="p-2 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition" title="Bold"><i data-lucide="bold" class="w-4 h-4"></i></button>
-                            <button @click="resumeEditorInstance && resumeEditorInstance.chain().focus().toggleItalic().run()" class="p-2 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition" title="Italic"><i data-lucide="italic" class="w-4 h-4"></i></button>
-                            <button @click="resumeEditorInstance && resumeEditorInstance.chain().focus().toggleUnderline().run()" class="p-2 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition" title="Underline"><i data-lucide="underline" class="w-4 h-4"></i></button>
+                            <button @click="resumeEditorInstance && Alpine.raw(resumeEditorInstance).chain().focus().toggleBold().run()" class="p-2 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition" title="Bold"><i data-lucide="bold" class="w-4 h-4"></i></button>
+                            <button @click="resumeEditorInstance && Alpine.raw(resumeEditorInstance).chain().focus().toggleItalic().run()" class="p-2 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition" title="Italic"><i data-lucide="italic" class="w-4 h-4"></i></button>
+                            <button @click="resumeEditorInstance && Alpine.raw(resumeEditorInstance).chain().focus().toggleUnderline().run()" class="p-2 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition" title="Underline"><i data-lucide="underline" class="w-4 h-4"></i></button>
                             <div class="w-px h-4 bg-slate-700 mx-1"></div>
-                            <button @click="resumeEditorInstance && resumeEditorInstance.chain().focus().toggleBulletList().run()" class="p-2 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition" title="Bullet List"><i data-lucide="list" class="w-4 h-4"></i></button>
-                            <button @click="resumeEditorInstance && resumeEditorInstance.chain().focus().toggleOrderedList().run()" class="p-2 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition" title="Ordered List"><i data-lucide="list-ordered" class="w-4 h-4"></i></button>
+                            <button @click="resumeEditorInstance && Alpine.raw(resumeEditorInstance).chain().focus().toggleBulletList().run()" class="p-2 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition" title="Bullet List"><i data-lucide="list" class="w-4 h-4"></i></button>
+                            <button @click="resumeEditorInstance && Alpine.raw(resumeEditorInstance).chain().focus().toggleOrderedList().run()" class="p-2 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition" title="Ordered List"><i data-lucide="list-ordered" class="w-4 h-4"></i></button>
                             <div class="w-px h-4 bg-slate-700 mx-1"></div>
-                            <button @click="resumeEditorInstance && resumeEditorInstance.chain().focus().undo().run()" class="p-2 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition" title="Undo"><i data-lucide="undo" class="w-4 h-4"></i></button>
-                            <button @click="resumeEditorInstance && resumeEditorInstance.chain().focus().redo().run()" class="p-2 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition" title="Redo"><i data-lucide="redo" class="w-4 h-4"></i></button>
+                            <button @click="resumeEditorInstance && Alpine.raw(resumeEditorInstance).chain().focus().undo().run()" class="p-2 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition" title="Undo"><i data-lucide="undo" class="w-4 h-4"></i></button>
+                            <button @click="resumeEditorInstance && Alpine.raw(resumeEditorInstance).chain().focus().redo().run()" class="p-2 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition" title="Redo"><i data-lucide="redo" class="w-4 h-4"></i></button>
                         </div>
 
                         <!-- Editor Canvas Container -->
@@ -1437,49 +1448,26 @@ $history = array_slice($history, 0, 5);
                 renderMarkdown(text) {
                     if (!text) return '';
                     const trimmed = text.trim();
-                    // Robust HTML detection: If it starts with a tag (after optional whitespace/newlines)
-                    if (/^\s*<[a-z1-6]/i.test(trimmed)) {
-                        return text;
+                    if (/^\s*<[a-z1-6]/i.test(trimmed)) return text;
+                    
+                    if (window.marked) {
+                        try {
+                            return window.marked.parse(text);
+                        } catch(e) { console.error("Marked fail", e); }
                     }
 
-                    // Broad set of bullet markers used by different PDF parsers and AI models
-                    // Broad set of bullet markers plus invisible characters
-                    const bulletRegex = /^[*\-+•·\u2022\u2023\u2043\u204C\u204D\u25E6\u25AA\u25AB\u25CF\u25CB]\s*$/u;
-
-                    let lines = text.split(/\r?\n/);
-                    lines = lines.filter(line => {
-                        // Aggressively strip invisible junk
-                        const t = line.replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
-                        // If the line is exactly a bullet marker (plus optional spaces), strip it
-                        if (t && bulletRegex.test(t)) return false;
-                        // KEEP empty lines so paragraph spacing is preserved
-                        return true;
-                    });
-                    
-                    let html = lines.join('\n')
-                        // Escape HTML first
+                    // Fallback regex
+                    let html = text
                         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-                        // Headers
-                        .replace(/^### (.+)$/gm, '<h3 class="text-sm font-bold text-slate-200 mt-4 mb-1 border-b border-slate-700/50 pb-1">$1</h3>')
-                        .replace(/^## (.+)$/gm, '<h2 class="text-base font-extrabold text-white mt-5 mb-2 uppercase tracking-wider">$1</h2>')
-                        .replace(/^# (.+)$/gm, '<h1 class="text-lg font-black text-white mt-2 mb-1">$1</h1>')
-                        // Bold
+                        .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+                        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+                        .replace(/^# (.+)$/gm, '<h1>$1</h1>')
                         .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-                        // Unordered bullets (handle markers with or without leading spaces)
-                        .replace(/^[*\-+•·\u2022\u2023\u2043\u204C\u204D]\s*(.+)$/gm, '<li class="ml-4 list-disc text-slate-300 leading-relaxed">$1</li>')
-                        // Ordered list items (1.item, etc.)
-                        .replace(/^\d+\.\s*(.+)$/gm, '<li class="ml-4 list-disc text-slate-300 leading-relaxed">$1</li>')
-                        // Wrap consecutive li tags
-                        .replace(/(<li[^>]*>.*<\/li>\n?)+/g, m => {
-                            // Final safety check: strip any LI tags that ended up empty or just whitespace/junk inside
-                            const cleaned = m.replace(/<li[^>]*>(\s|&nbsp;|&#160;)*<\/li>\n?/g, '');
-                            if (!cleaned.trim()) return '';
-                            return '<ul class="my-2 space-y-1">' + cleaned + '</ul>';
-                        })
-                        // Paragraphs
-                        .replace(/\n{2,}/g, '</p><p class="mb-2">')
+                        .replace(/^[*\-+•·\u2022]\s*(.+)$/gm, '<li>$1</li>')
+                        .replace(/(<li>.*<\/li>\n?)+/g, m => '<ul>' + m + '</ul>')
+                        .replace(/\n{2,}/g, '</p><p>')
                         .replace(/\n/g, '<br>');
-                    return '<p class="mb-2">' + html + '</p>';
+                    return '<p>' + html + '</p>';
                 },
 
                 resumes: [],
@@ -1520,7 +1508,7 @@ $history = array_slice($history, 0, 5);
                                 extensions: [...window.getTiptapExtensions()],
                                 content: this.renderMarkdown(content),
                                 editorProps: {
-                                    attributes: { class: 'paper-page prose-analysis text-slate-200 min-h-[600px] outline-none rounded-xl p-8 bg-darkcard/50 shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-slate-700/50' }
+                                    attributes: { class: 'paper-page prose-paper min-h-[600px] outline-none rounded-xl p-8 bg-white shadow-2xl relative z-10' }
                                 }
                             });
                             // Force render lucide icons in case
@@ -1568,10 +1556,12 @@ $history = array_slice($history, 0, 5);
                     try {
                         const currentContent = this.resumeEditorInstance ? this.resumeEditorInstance.getHTML() : '';
                         
-                        const historyPayload = this.resumeCopilotMessages.map(m => ({
-                            role: m.role === 'ai' ? 'model' : 'user',
-                            parts: [{ text: m.text }]
-                        })).slice(0, -1);
+                        const historyPayload = this.resumeCopilotMessages
+                            .filter(m => m.role !== 'system')
+                            .map(m => ({
+                                role: m.role === 'ai' ? 'model' : 'user',
+                                parts: [{ text: m.text }]
+                            })).slice(0, -1);
 
                         const res = await fetch('api/resume_copilot.php', {
                             method: 'POST',
@@ -1587,14 +1577,19 @@ $history = array_slice($history, 0, 5);
                         if (data.success) {
                             this.resumeCopilotMessages.push({ role: 'ai', text: data.reply });
                             if (data.new_text && this.resumeEditorInstance) {
-                                this.resumeEditorInstance.commands.setContent(this.renderMarkdown(data.new_text));
+                                // Use direct reference to avoid Alpine proxies which cause "mismatched transaction" errors in ProseMirror
+                                const rawEditor = Alpine.raw(this.resumeEditorInstance);
+                                if (rawEditor) {
+                                    rawEditor.commands.setContent(this.renderMarkdown(data.new_text));
+                                }
                                 this.resumeCopilotMessages.push({ role: 'system', text: '⚡ AI automatically applied modifications to the canvas.' });
                             }
                         } else {
                              this.resumeCopilotMessages.push({ role: 'ai', text: 'Error communicating with AI: ' + data.error });
                         }
                     } catch (e) {
-                        this.resumeCopilotMessages.push({ role: 'ai', text: 'Network failure communicating with AI.' });
+                        console.error('FRONTEND COPILOT ERROR:', e);
+                        this.resumeCopilotMessages.push({ role: 'ai', text: 'Rendering issue: ' + e.message });
                     }
                     
                     this.resumeCopilotBusy = false;
@@ -2468,7 +2463,7 @@ async fetchHistory() {
                             hybrid: this.jobFilters.hybrid
                         });
                         
-                        const res = await fetch(`/api/search_jobs.php?${params.toString()}`);
+                        const res = await fetch(`api/search_jobs.php?${params.toString()}`);
                         const data = await res.json();
                         
                         if (data.success) {
