@@ -1034,6 +1034,11 @@ $history = array_slice($history, 0, 5);
                     </div>
                 </div>
                 <p class="text-xs font-medium text-slate-400 mt-3" x-text="'Uploaded ' + formatDate(resume.upload_date)"></p>
+                <div class="mt-4 pt-4 border-t border-slate-700/50 flex gap-2">
+                    <button @click="openResumeEditor(resume)" class="flex-1 px-3 py-2 bg-slate-800 hover:bg-slate-700 hover:text-white text-slate-300 rounded-xl text-[11px] font-bold uppercase tracking-widest transition flex justify-center items-center shadow-inner">
+                        <i data-lucide="file-text" class="w-3.5 h-3.5 mr-1.5 text-primary"></i> Edit & Copilot
+                    </button>
+                </div>
                 
                 <div class="absolute top-5 right-5">
                     <button @click="deleteResume(resume.id)" class="p-2.5 text-slate-500 bg-slate-800/50 hover:bg-red-500/20 hover:text-red-400 rounded-xl transition-all opacity-0 group-hover:opacity-100 backdrop-blur-sm shadow-sm ring-1 ring-white/5 hover:ring-red-500/30">
@@ -1229,7 +1234,105 @@ $history = array_slice($history, 0, 5);
                 </div>
             </div>
 
-            
+            <!-- Resume AI Copilot Modal -->
+            <div x-show="showResumeEditor" x-transition.opacity class="fixed inset-0 z-[65] flex items-center justify-center p-4" style="display:none;" x-cloak>
+                <div class="absolute inset-0 bg-black/90 backdrop-blur-xl" @click="if(confirm('Close Resume Editor? Unsaved changes will be lost.')) showResumeEditor = false"></div>
+                <div class="relative bg-[#060b14] border border-slate-700 rounded-3xl shadow-2xl w-full max-w-7xl flex flex-col md:flex-row z-10 overflow-hidden" style="height: 90vh;">
+                    
+                    <!-- Left Pane: TipTap Editor -->
+                    <div class="flex-1 flex flex-col border-r border-slate-700/50 bg-[#0a1120]">
+                        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-700/50 bg-slate-900/80">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center shadow-inner"><i data-lucide="file-text" class="w-5 h-5 text-primary"></i></div>
+                                <div>
+                                    <h3 class="text-base font-extrabold text-white leading-tight">Resume Canvas</h3>
+                                    <p class="text-[10px] uppercase tracking-widest font-bold text-slate-400" x-text="editingResumeItem ? (editingResumeItem.original_name || editingResumeItem.filename) : ''"></p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button @click="showResumeEditor = false" class="px-4 py-2 text-slate-400 hover:text-white text-sm font-bold transition rounded-xl hover:bg-slate-800">Close</button>
+                                <button @click="saveResumeEditorContent()" :disabled="resumeEditorSaving" class="px-6 py-2 bg-gradient-to-br from-primary to-secondary text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/20 transition flex items-center gap-2">
+                                    <i data-lucide="save" class="w-4 h-4"></i> <span x-text="resumeEditorSaving ? 'Saving...' : 'Save Canvas'"></span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Editor Toolbar -->
+                        <div class="flex items-center flex-wrap gap-1 px-4 py-2 border-b border-slate-700/50 bg-slate-800/40 shrink-0">
+                            <button @click="resumeEditorInstance && resumeEditorInstance.chain().focus().toggleHeading({ level: 1 }).run()" class="p-2 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition" title="Heading 1"><i data-lucide="heading-1" class="w-4 h-4"></i></button>
+                            <button @click="resumeEditorInstance && resumeEditorInstance.chain().focus().toggleHeading({ level: 2 }).run()" class="p-2 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition" title="Heading 2"><i data-lucide="heading-2" class="w-4 h-4"></i></button>
+                            <div class="w-px h-4 bg-slate-700 mx-1"></div>
+                            <button @click="resumeEditorInstance && resumeEditorInstance.chain().focus().toggleBold().run()" class="p-2 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition" title="Bold"><i data-lucide="bold" class="w-4 h-4"></i></button>
+                            <button @click="resumeEditorInstance && resumeEditorInstance.chain().focus().toggleItalic().run()" class="p-2 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition" title="Italic"><i data-lucide="italic" class="w-4 h-4"></i></button>
+                            <button @click="resumeEditorInstance && resumeEditorInstance.chain().focus().toggleUnderline().run()" class="p-2 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition" title="Underline"><i data-lucide="underline" class="w-4 h-4"></i></button>
+                            <div class="w-px h-4 bg-slate-700 mx-1"></div>
+                            <button @click="resumeEditorInstance && resumeEditorInstance.chain().focus().toggleBulletList().run()" class="p-2 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition" title="Bullet List"><i data-lucide="list" class="w-4 h-4"></i></button>
+                            <button @click="resumeEditorInstance && resumeEditorInstance.chain().focus().toggleOrderedList().run()" class="p-2 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition" title="Ordered List"><i data-lucide="list-ordered" class="w-4 h-4"></i></button>
+                            <div class="w-px h-4 bg-slate-700 mx-1"></div>
+                            <button @click="resumeEditorInstance && resumeEditorInstance.chain().focus().undo().run()" class="p-2 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition" title="Undo"><i data-lucide="undo" class="w-4 h-4"></i></button>
+                            <button @click="resumeEditorInstance && resumeEditorInstance.chain().focus().redo().run()" class="p-2 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition" title="Redo"><i data-lucide="redo" class="w-4 h-4"></i></button>
+                        </div>
+
+                        <!-- Editor Canvas Container -->
+                        <div class="flex-1 overflow-y-auto p-8 custom-scrollbar">
+                            <div id="resume-copilot-editor" class="max-w-4xl mx-auto shadow-2xl pb-32"></div>
+                        </div>
+                    </div>
+
+                    <!-- Right Pane: AI Chat Copilot -->
+                    <div class="w-full md:w-96 flex flex-col bg-slate-900/90 relative shrink-0">
+                        <div class="flex items-center gap-3 px-5 py-4 border-b border-slate-700/50 bg-slate-900 shadow-sm shrink-0">
+                            <div class="relative">
+                                <div class="w-8 h-8 rounded-full bg-indigo-500/20 border border-indigo-500/50 flex items-center justify-center">
+                                    <i data-lucide="sparkles" class="w-4 h-4 text-indigo-400"></i>
+                                </div>
+                                <div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-slate-900 rounded-full"></div>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-white leading-none">AI Copilot</h3>
+                                <p class="text-[10px] text-slate-400 mt-1">Reviewing active canvas...</p>
+                            </div>
+                        </div>
+
+                        <div class="flex-1 overflow-y-auto px-5 py-5 space-y-4 custom-scrollbar" x-ref="copilotMessagesList">
+                            <template x-for="(msg, idx) in resumeCopilotMessages" :key="idx">
+                                <div :class="msg.role === 'user' ? 'flex justify-end' : (msg.role === 'system' ? 'flex justify-center' : 'flex justify-start')">
+                                    <div x-show="msg.role !== 'system'" :class="msg.role === 'user' ? 'bg-indigo-600 border-indigo-500 text-white rounded-2xl rounded-tr-sm' : 'bg-slate-800 border-slate-700 text-slate-200 rounded-2xl rounded-tl-sm'" class="px-4 py-3 text-sm max-w-[90%] border shadow-md">
+                                        <div x-html="renderMarkdown(msg.text)" class="prose prose-invert prose-sm"></div>
+                                    </div>
+                                    <div x-show="msg.role === 'system'" class="w-full text-center py-2">
+                                        <div class="inline-flex items-center px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[11px] font-bold text-emerald-400" x-html="msg.text"></div>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <div x-show="resumeCopilotBusy" class="flex justify-start">
+                                <div class="bg-slate-800 border border-slate-700 rounded-2xl rounded-tl-sm px-5 py-3 shadow-md">
+                                    <div class="flex space-x-1.5 items-center h-4">
+                                        <div class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce"></div>
+                                        <div class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style="animation-delay: 0.15s"></div>
+                                        <div class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-slate-900 border-t border-slate-700/50 shrink-0">
+                            <div class="relative flex items-center bg-darkbg border border-slate-700 rounded-2xl p-1 shadow-inner focus-within:border-indigo-500/50 focus-within:ring-1 focus-within:ring-indigo-500/50 transition-all">
+                                <textarea x-model="resumeCopilotInput" @keydown.enter.prevent="if(!$event.shiftKey) sendResumeCopilotMessage()" rows="1" placeholder="Instruct AI to edit resume..." class="w-full bg-transparent text-sm text-white px-3 py-2 outline-none resize-none placeholder-slate-500"></textarea>
+                                <button @click="sendResumeCopilotMessage()" :disabled="resumeCopilotBusy || !resumeCopilotInput.trim()" class="p-2 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-white disabled:opacity-50 transition-colors shadow-lg shadow-indigo-500/20 mx-1 shrink-0">
+                                    <i data-lucide="send" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                            <div class="flex justify-center mt-3 gap-2">
+                                <button @click="resumeCopilotInput = 'Refactor this resume to emphasize strong leadership metrics.'; sendResumeCopilotMessage()" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 rounded-full text-[10px] font-bold text-slate-400 border border-slate-700 transition transition-colors">🔥 Emphasize metrics</button>
+                                <button @click="resumeCopilotInput = 'Please aggressively critique the active canvas and point out weak points.'; sendResumeCopilotMessage()" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 rounded-full text-[10px] font-bold text-slate-400 border border-slate-700 transition transition-colors">🧐 Critique this</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Mock Interview Modal -->
             <div x-show="showMockInterview" x-transition.opacity class="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4" style="display:none;" x-cloak>
                 <div class="absolute inset-0 bg-black/80 backdrop-blur-md" @click="if(!isListening) showMockInterview = false"></div>
@@ -1385,6 +1488,121 @@ $history = array_slice($history, 0, 5);
                 uploading: false,
                 uploadError: null,
                 newCategory: '',
+
+                showResumeEditor: false,
+                editingResumeItem: null,
+                resumeEditorInstance: null,
+                resumeEditorSaving: false,
+                resumeCopilotBusy: false,
+                resumeCopilotInput: '',
+                resumeCopilotMessages: [],
+
+                async openResumeEditor(resume) {
+                    this.editingResumeItem = resume;
+                    this.showResumeEditor = true;
+                    this.resumeCopilotMessages = [
+                        { role: 'ai', text: 'Hello! I am your AI Resume Copilot. I can review your resume layout, suggest sentence edits, or aggressively rewrite entire sections for you directly on your canvas. What would you like to improve?' }
+                    ];
+                    
+                    try {
+                        const res = await fetch(`api/resumes.php?full=1&id=${resume.id}`);
+                        const data = await res.json();
+                        let content = '';
+                        if (data.success && data.resume && data.resume.extracted_text) {
+                            content = data.resume.extracted_text;
+                        }
+                        
+                        this.$nextTick(() => {
+                            if (this.resumeEditorInstance) this.resumeEditorInstance.destroy();
+                            const el = document.querySelector('#resume-copilot-editor');
+                            this.resumeEditorInstance = new window.TiptapEditor({
+                                element: el,
+                                extensions: [...window.getTiptapExtensions()],
+                                content: this.renderMarkdown(content),
+                                editorProps: {
+                                    attributes: { class: 'paper-page prose-analysis text-slate-200 min-h-[600px] outline-none rounded-xl p-8 bg-darkcard/50 shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-slate-700/50' }
+                                }
+                            });
+                            // Force render lucide icons in case
+                            setTimeout(() => { if (window.lucide) window.lucide.createIcons(); }, 100);
+                        });
+                    } catch(e) {
+                        alert('Could not fully load resume content.');
+                    }
+                },
+                
+                async saveResumeEditorContent() {
+                    if (!this.editingResumeItem || this.resumeEditorSaving) return;
+                    this.resumeEditorSaving = true;
+                    const contentToSave = this.resumeEditorInstance ? this.resumeEditorInstance.getHTML() : '';
+                    
+                    try {
+                        const res = await fetch('api/resumes.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ action: 'update_content', resume_id: this.editingResumeItem.id, content: contentToSave })
+                        });
+                        const data = await res.json();
+                        if (!data.success) {
+                            alert("Failed to save.");
+                        }
+                    } catch(e) {
+                        alert("Network error.");
+                    }
+                    this.resumeEditorSaving = false;
+                },
+                
+                async sendResumeCopilotMessage() {
+                    if (!this.resumeCopilotInput.trim() || this.resumeCopilotBusy) return;
+                    const messageText = this.resumeCopilotInput.trim();
+                    this.resumeCopilotInput = '';
+                    
+                    this.resumeCopilotMessages.push({ role: 'user', text: messageText });
+                    this.resumeCopilotBusy = true;
+                    
+                    setTimeout(() => {
+                        const container = this.$refs.copilotMessagesList;
+                        if (container) container.scrollTop = container.scrollHeight;
+                    }, 50);
+
+                    try {
+                        const currentContent = this.resumeEditorInstance ? this.resumeEditorInstance.getHTML() : '';
+                        
+                        const historyPayload = this.resumeCopilotMessages.map(m => ({
+                            role: m.role === 'ai' ? 'model' : 'user',
+                            parts: [{ text: m.text }]
+                        })).slice(0, -1);
+
+                        const res = await fetch('api/resume_copilot.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                                message: messageText, 
+                                history: historyPayload,
+                                resume_content: currentContent
+                            })
+                        });
+                        
+                        const data = await res.json();
+                        if (data.success) {
+                            this.resumeCopilotMessages.push({ role: 'ai', text: data.reply });
+                            if (data.new_text && this.resumeEditorInstance) {
+                                this.resumeEditorInstance.commands.setContent(this.renderMarkdown(data.new_text));
+                                this.resumeCopilotMessages.push({ role: 'system', text: '⚡ AI automatically applied modifications to the canvas.' });
+                            }
+                        } else {
+                             this.resumeCopilotMessages.push({ role: 'ai', text: 'Error communicating with AI: ' + data.error });
+                        }
+                    } catch (e) {
+                        this.resumeCopilotMessages.push({ role: 'ai', text: 'Network failure communicating with AI.' });
+                    }
+                    
+                    this.resumeCopilotBusy = false;
+                    setTimeout(() => {
+                        const container = this.$refs.copilotMessagesList;
+                        if (container) container.scrollTop = container.scrollHeight;
+                    }, 50);
+                },
 
                 // History Job Description Editor
                 showJobEditor: false,

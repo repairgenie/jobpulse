@@ -20,8 +20,13 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
     case 'GET':
-        $resumes = $resumeMgr->getResumes($userId);
-        echo json_encode(['success' => true, 'resumes' => $resumes]);
+        if (isset($_GET['full']) && isset($_GET['id'])) {
+            $resume = $resumeMgr->getResumeFull($userId, $_GET['id']);
+            echo json_encode(['success' => (bool)$resume, 'resume' => $resume]);
+        } else {
+            $resumes = $resumeMgr->getResumes($userId);
+            echo json_encode(['success' => true, 'resumes' => $resumes]);
+        }
         break;
 
     case 'POST':
@@ -47,6 +52,11 @@ switch ($method) {
         elseif ($action === 'rename') {
             $newName = $input['new_name'] ?? '';
             $success = $resumeMgr->renameResume($userId, $resumeId, $newName);
+            echo json_encode(['success' => $success]);
+        }
+        elseif ($action === 'update_content') {
+            $newContent = $input['content'] ?? '';
+            $success = $resumeMgr->updateResumeContent($userId, $resumeId, $newContent);
             echo json_encode(['success' => $success]);
         }
         else {
