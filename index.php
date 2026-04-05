@@ -201,7 +201,7 @@ $history = array_slice($history, 0, 5);
                         fd.append('zip_code', this.form.zip_code);
                     }
                     try {
-                        const res = await fetch(`/api/auth.php?action=${this.tab}`, { method: 'POST', body: fd });
+                        const res = await fetch(`api/auth.php?action=${this.tab}`, { method: 'POST', body: fd });
                         const data = await res.json();
                         if (data.success) {
                             if (this.tab === 'login') window.location.reload();
