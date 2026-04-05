@@ -970,9 +970,9 @@ $history = array_slice($history, 0, 5);
                                 </td>
                                 <td class="px-6 py-5 whitespace-nowrap">
                                     <span class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-md border" :class="getStatusColor(pipelineJob.status)" x-text="pipelineJob.status"></span>
-                                    <template x-if="pipelineJob.ai_analysis">
+                                    <template x-if="getScore(pipelineJob.ai_analysis)">
                                         <div class="mt-2 text-xs text-slate-400">
-                                            AI Score: <span class="text-primary font-bold" x-text="JSON.parse(pipelineJob.ai_analysis).score + '/10'"></span>
+                                            AI Score: <span class="text-primary font-bold" x-text="getScore(pipelineJob.ai_analysis) + '/10'"></span>
                                         </div>
                                     </template>
                                 </td>
@@ -1022,8 +1022,18 @@ $history = array_slice($history, 0, 5);
                 <div class="w-14 h-14 rounded-xl bg-darkcard/80 flex items-center justify-center text-secondary mb-5 border border-slate-700/50 shadow-inner">
                     <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                 </div>
-                <h4 class="font-bold text-white truncate text-lg tracking-tight" :title="resume.original_name" x-text="resume.original_name"></h4>
-                <p class="text-xs font-medium text-slate-400 mt-2" x-text="'Uploaded ' + formatDate(resume.upload_date)"></p>
+                <div class="relative flex-1 min-w-0 pr-8">
+                    <div x-show="!resume._isEditing" class="flex items-center group">
+                        <h4 class="font-bold text-white truncate text-lg tracking-tight" :title="resume.original_name || resume.filename" x-text="resume.original_name || resume.filename || 'Unnamed Resume'"></h4>
+                        <button @click="resume._editName = (resume.original_name || resume.filename); resume._isEditing = true; setTimeout(() => { if(window.lucide) window.lucide.createIcons(); }, 100);" class="ml-2 p-1 text-slate-500 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity" title="Rename Resume"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
+                    </div>
+                    <div x-show="resume._isEditing" class="flex items-center gap-2 mt-1 z-20 relative">
+                        <input x-model="resume._editName" @keydown.enter="renameResume(resume)" @keydown.escape="resume._isEditing = false" class="bg-slate-800 text-[11px] text-white px-2 py-1 rounded border border-slate-600 focus:outline-none focus:border-primary w-full shadow-inner">
+                        <button @click="renameResume(resume)" class="p-1 text-green-400 hover:text-green-300 bg-slate-800 rounded shadow border border-slate-700" title="Save"><i data-lucide="check" class="w-3.5 h-3.5"></i></button>
+                        <button @click="resume._isEditing = false" class="p-1 text-red-400 hover:text-red-300 bg-slate-800 rounded shadow border border-slate-700" title="Cancel"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+                    </div>
+                </div>
+                <p class="text-xs font-medium text-slate-400 mt-3" x-text="'Uploaded ' + formatDate(resume.upload_date)"></p>
                 
                 <div class="absolute top-5 right-5">
                     <button @click="deleteResume(resume.id)" class="p-2.5 text-slate-500 bg-slate-800/50 hover:bg-red-500/20 hover:text-red-400 rounded-xl transition-all opacity-0 group-hover:opacity-100 backdrop-blur-sm shadow-sm ring-1 ring-white/5 hover:ring-red-500/30">
@@ -2147,6 +2157,18 @@ if (this.currentView === 'my_jobs') this.fetchHistory();
                         }
                     } catch (e) {}
                 },
+                formatDate(dateString) {
+                    if (!dateString) return '';
+                    const d = new Date(dateString.replace(' ', 'T') + 'Z');
+                    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                },
+                getScore(analysisStr) {
+                    if (!analysisStr || analysisStr === 'undefined') return null;
+                    try {
+                        const parsed = JSON.parse(analysisStr);
+                        return parsed.score || null;
+                    } catch(e) { return null; }
+                },
                 getStatusColor(status) {
                     const colors = {
                         'Applied': 'bg-blue-500/20 text-blue-300 border-blue-500/30',
@@ -2185,13 +2207,37 @@ async fetchHistory() {
                         const res = await fetch('api/resumes.php');
                         const data = await res.json();
                         if (data.success) {
-                            this.resumes = data.resumes;
+                            this.resumes = data.resumes.map(r => ({...r, _isEditing: false, _editName: ''}));
                             const primary = this.resumes.find(r => r.is_primary);
                             if (primary && !this.activeResumeId) this.activeResumeId = primary.id;
                             else if(this.resumes.length > 0 && !this.activeResumeId) this.activeResumeId = this.resumes[0].id;
                             setTimeout(() => { if(window.lucide) window.lucide.createIcons(); }, 100);
                         }
                     } catch(e) { console.error("Failed fetching resumes"); }
+                },
+
+                async renameResume(resume) {
+                    if (!resume._editName.trim()) {
+                        resume._isEditing = false;
+                        return;
+                    }
+                    try {
+                        const res = await fetch('api/resumes.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ action: 'rename', resume_id: resume.id, new_name: resume._editName.trim() })
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                            resume.original_name = resume._editName.trim();
+                            resume._isEditing = false;
+                            setTimeout(() => { if(window.lucide) window.lucide.createIcons(); }, 100);
+                        } else {
+                            alert('Failed to rename resume');
+                        }
+                    } catch (e) {
+                        alert('Network error during rename');
+                    }
                 },
 
                 async fetchJobs() {

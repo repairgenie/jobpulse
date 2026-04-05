@@ -44,6 +44,11 @@ switch ($method) {
             $success = $resumeMgr->deleteResume($userId, $resumeId);
             echo json_encode(['success' => $success]);
         } 
+        elseif ($action === 'rename') {
+            $newName = $input['new_name'] ?? '';
+            $success = $resumeMgr->renameResume($userId, $resumeId, $newName);
+            echo json_encode(['success' => $success]);
+        }
         else {
             http_response_code(400);
             echo json_encode(['success' => false, 'error' => 'Invalid action.']);

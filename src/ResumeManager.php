@@ -137,5 +137,21 @@ class ResumeManager
         
         return false;
     }
+    public function renameResume(string $userId, string $resumeId, string $newName): bool
+    {
+        $userDir = $this->getUserDir($userId);
+        $safeId = preg_replace('/[^a-zA-Z0-9_-]/', '', $resumeId);
+        $filePath = $userDir . '/' . $safeId . '.json';
+        
+        if (file_exists($filePath)) {
+            $data = json_decode(file_get_contents($filePath), true);
+            if ($data) {
+                $data['original_name'] = $newName; 
+                file_put_contents($filePath, json_encode($data, JSON_PRETTY_PRINT));
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
