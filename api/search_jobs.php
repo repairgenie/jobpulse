@@ -16,9 +16,10 @@ header('Content-Type: application/json');
 
 set_error_handler(function($errno, $errstr, $errfile, $errline) {
     if (!(error_reporting() & $errno)) return false;
+    error_log("PHP Error [$errno]: $errstr in $errfile on line $errline");
     if (ob_get_level() > 0) ob_end_clean();
     http_response_code(500);
-    echo json_encode(['success' => false, 'error' => "PHP Error [$errno]: $errstr in $errfile on line $errline"]);
+    echo json_encode(['success' => false, 'error' => "An internal server error occurred."]);
     exit;
 });
 
@@ -69,8 +70,9 @@ if (ADZUNA_APP_ID === 'your_adzuna_app_id' || ADZUNA_APP_ID === 'PLACEHOLDER' ||
         ]);
         exit;
     } catch (\Exception $e) {
+        error_log("Job Scraper Search Error: " . $e->getMessage());
         http_response_code(500);
-        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        echo json_encode(['success' => false, 'error' => 'An error occurred while searching for jobs.']);
         exit;
     }
 }
@@ -128,7 +130,8 @@ try {
     ]);
 
 } catch (Exception $e) {
+    error_log("Adzuna API Search Error: " . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    echo json_encode(['success' => false, 'error' => 'An error occurred while searching for jobs via Adzuna API.']);
 }
 

@@ -138,8 +138,9 @@ if ($format === 'pdf') {
         logMsg("PDF generated: " . strlen($binaryData) . " bytes");
     } catch (Exception $e) {
         logMsg("PDF Error: " . $e->getMessage());
+        error_log("PDF Error: " . $e->getMessage());
         http_response_code(500);
-        exit(json_encode(['success' => false, 'error' => 'PDF Error: ' . $e->getMessage()]));
+        exit(json_encode(['success' => false, 'error' => 'An error occurred while generating the PDF.']));
     }
 } elseif ($format === 'combined') {
     $filename = "{$prefix}__application_{$dateStamp}.pdf";
@@ -164,8 +165,9 @@ if ($format === 'pdf') {
         logMsg("Combined PDF generated: " . strlen($binaryData) . " bytes");
     } catch (Exception $e) {
         logMsg("Combined PDF Error: " . $e->getMessage());
+        error_log("Combined PDF Error: " . $e->getMessage());
         http_response_code(500);
-        exit(json_encode(['success' => false, 'error' => 'Combined PDF Error: ' . $e->getMessage()]));
+        exit(json_encode(['success' => false, 'error' => 'An error occurred while generating the combined PDF.']));
     }
 } else {
     $filename = "{$prefix}__application_{$dateStamp}.txt";

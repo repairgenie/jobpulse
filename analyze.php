@@ -42,7 +42,9 @@ try {
     $resume = $stmt->fetch();
 
     if (!$resume) {
-        throw new Exception("Resume not found.");
+        http_response_code(404);
+        echo json_encode(['error' => 'Resume not found.']);
+        exit;
     }
 
     $resumePath = RESUME_PATH . '/' . $resume['filename'];
@@ -132,6 +134,7 @@ Return the response strictly as a JSON object with keys: 'score', 'strengths', '
     ]);
 
 } catch (Exception $e) {
+    error_log("Analysis Error: " . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['error' => $e->getMessage()]);
+    echo json_encode(['error' => 'An internal error occurred while processing the analysis.']);
 }
