@@ -189,6 +189,14 @@ $history = array_slice($history, 0, 5);
     <script>
         function authApp() {
             return {
+                pipelineJobs: [],
+                pipelineLoading: false,
+                isJobModalOpen: false,
+                jobForm: { company_name: '', job_title: '', status: 'Applied', notes: '' },
+                isAnalyzeModalOpen: false,
+                analyzeForm: { company_name: '', job_title: '', job_description: '', resume_id: '' },
+                
+
                 tab: 'login', form: { email: '', password: '', first_name: '', last_name: '', city: '', state: '', zip_code: '' }, loading: false, error: null, success: null,
                 async submitAuth() {
                     this.loading = true; this.error = null; this.success = null;
@@ -240,7 +248,14 @@ $history = array_slice($history, 0, 5);
                             <button @click="currentView = 'my_jobs'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'my_jobs' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
                                 <i data-lucide="briefcase" class="mr-3 h-5 w-5 opacity-100"></i> My Jobs
                             </button>
-                        </nav>
+                        
+                            <button @click="currentView = 'dashboard'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'dashboard' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                <i data-lucide="layout-list" class="mr-3 h-5 w-5 opacity-100"></i> Pipeline
+                            </button>
+                            <button @click="currentView = 'resumes'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'resumes' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                <i data-lucide="file-badge" class="mr-3 h-5 w-5 opacity-100"></i> Resumes
+                            </button>
+</nav>
                     </div>
                     <div class="flex-shrink-0 flex border-t border-slate-700/50 p-4 bg-darkbg/30">
                         <div class="flex items-center">
@@ -702,7 +717,7 @@ $history = array_slice($history, 0, 5);
                         </div>
                     </template>
                     
-                    <template x-for="job in jobs" :key="job.id">
+                    <template x-for="job in jobs" :key="pipelineJob.id">
                         <div class="bg-card/50 hover:bg-card border border-slate-700 hover:border-primary/50 rounded-2xl p-6 transition-all shadow-md group">
                             <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
                                 <div class="flex-1">
@@ -857,8 +872,8 @@ $history = array_slice($history, 0, 5);
                                         <i data-lucide="message-square" class="w-3.5 h-3.5 mr-1.5"></i> Ask AI
                                     </button>
                                 </div>
-                                <button @click="alert('Mock Interview feature coming soon!')" class="w-full text-[10px] font-bold text-amber-400 uppercase tracking-widest hover:text-white hover:bg-amber-500/20 transition flex justify-center items-center bg-amber-500/10 py-2.5 rounded-lg border border-amber-500/30">
-                                    <i data-lucide="mic" class="w-3.5 h-3.5 mr-1.5"></i> Mock Interview (Coming Soon)
+                                <button @click="openMockInterview(item)" class="w-full text-[10px] font-bold text-amber-400 uppercase tracking-widest hover:text-white hover:bg-amber-500/20 transition flex justify-center items-center bg-amber-500/10 py-2.5 rounded-lg border border-amber-500/30 shadow-lg shadow-amber-500/10 group">
+                                    <i data-lucide="mic" class="w-3.5 h-3.5 mr-1.5 transition-transform group-hover:scale-110"></i> Start Mock Interview Session
                                 </button>
                             </div>
                         </div>
@@ -867,7 +882,161 @@ $history = array_slice($history, 0, 5);
             </div>
 
 
-            <!-- ═══════════════════════════════ GLOBAL MODALS (Accessible from all views) ═══════════════════════════════ -->
+            
+<!-- Dashboard View (Jobs) -->
+<div x-show="currentView === 'dashboard'" x-transition.opacity.duration.300ms x-cloak>
+    
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 relative z-10">
+        <div>
+            <h1 class="text-3xl font-extrabold text-white tracking-tight drop-shadow-sm">Job Applications</h1>
+            <p class="text-slate-400 mt-2 text-sm">Track and analyze your job hunt gracefully.</p>
+        </div>
+        <div class="flex space-x-3 mt-4 md:mt-0">
+            <button @click="isJobModalOpen = true" class="inline-flex items-center px-4 py-2 bg-darkcard border border-slate-600 hover:border-slate-500 hover:bg-slate-700 text-white text-sm font-medium rounded-xl shadow-lg transition-all active:scale-95">
+                <svg class="w-5 h-5 mr-1 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                Manual Add
+            </button>
+            <button @click="isAnalyzeModalOpen = true" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary to-secondary hover:from-indigo-400 hover:to-violet-400 text-white text-sm font-bold rounded-xl shadow-[0_0_15px_rgba(99,102,241,0.5)] transition-all active:scale-95">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                AI Analyze
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 relative z-10">
+        <div class="glass p-6 rounded-2xl shadow-xl relative overflow-hidden group">
+            <div class="absolute -right-6 -top-6 w-32 h-32 bg-primary/20 rounded-full blur-2xl group-hover:bg-primary/30 transition-all duration-500"></div>
+            <p class="text-xs font-semibold tracking-wider text-slate-400 uppercase">Total Applied</p>
+            <p class="text-4xl font-extrabold text-white mt-2" x-text="pipelineJobs.length"></p>
+        </div>
+        <div class="glass p-6 rounded-2xl shadow-xl relative overflow-hidden group">
+            <div class="absolute -right-6 -top-6 w-32 h-32 bg-secondary/20 rounded-full blur-2xl group-hover:bg-secondary/30 transition-all duration-500"></div>
+            <p class="text-xs font-semibold tracking-wider text-slate-400 uppercase">Interviewing</p>
+            <p class="text-4xl font-extrabold text-white mt-2" x-text="pipelineJobs.filter(j => j.status === 'Interviewing').length"></p>
+        </div>
+        <div class="glass p-6 rounded-2xl shadow-xl relative overflow-hidden group">
+            <div class="absolute -right-6 -top-6 w-32 h-32 bg-accent/20 rounded-full blur-2xl group-hover:bg-accent/30 transition-all duration-500"></div>
+            <p class="text-xs font-semibold tracking-wider text-slate-400 uppercase">Offers</p>
+            <p class="text-4xl font-extrabold text-white mt-2" x-text="pipelineJobs.filter(j => j.status === 'Offer').length"></p>
+        </div>
+    </div>
+
+    <!-- Jobs Table -->
+    <div class="glass rounded-2xl shadow-2xl overflow-hidden relative z-10 border-t border-l border-white/10">
+        <template x-if="pipelineLoading">
+            <div class="p-12 text-center text-slate-400">
+                <svg class="animate-spin h-10 w-10 text-primary mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <span class="font-medium tracking-wide">Loading your pipeline...</span>
+            </div>
+        </template>
+        <template x-if="!pipelineLoading && pipelineJobs.length === 0">
+            <div class="p-16 text-center flex flex-col items-center">
+                <div class="w-20 h-20 bg-darkcard/50 ring-1 ring-white/10 text-slate-500 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold text-white">Your Pipeline is Empty</h3>
+                <p class="text-slate-400 mt-2 max-w-sm text-sm">You haven't added any job applications. Add one manually or use AI Analysis to get started.</p>
+                <div class="mt-8 flex space-x-4">
+                    <button @click="isAnalyzeModalOpen = true" class="px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white font-bold rounded-xl shadow-lg hover:shadow-primary/30 transition-all">AI Analyze First Job</button>
+                </div>
+            </div>
+        </template>
+        <template x-if="pipelineJobs.length > 0">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-700/50">
+                    <thead class="bg-darkcard/40 backdrop-blur-md">
+                        <tr>
+                            <th scope="col" class="px-6 py-5 text-left text-xs font-bold text-slate-400 uppercase tracking-widest">Company & Role</th>
+                            <th scope="col" class="px-6 py-5 text-left text-xs font-bold text-slate-400 uppercase tracking-widest">Status</th>
+                            <th scope="col" class="px-6 py-5 text-left text-xs font-bold text-slate-400 uppercase tracking-widest">Date Applied</th>
+                            <th scope="col" class="px-6 py-5 text-right text-xs font-bold text-slate-400 uppercase tracking-widest">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-700/50">
+                        <template x-for="pipelineJob in pipelineJobs" :key="pipelineJob.id">
+                            <tr class="hover:bg-slate-800/40 transition-colors duration-200 group">
+                                <td class="px-6 py-5 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-primary font-bold mr-4">
+                                            <span x-text="pipelineJob.company_name.substring(0,1).toUpperCase()"></span>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-bold text-white" x-text="pipelineJob.company_name"></div>
+                                            <div class="text-xs text-slate-400 mt-0.5" x-text="pipelineJob.job_title"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-5 whitespace-nowrap">
+                                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-md border" :class="getStatusColor(pipelineJob.status)" x-text="pipelineJob.status"></span>
+                                    <template x-if="pipelineJob.ai_analysis">
+                                        <div class="mt-2 text-xs text-slate-400">
+                                            AI Score: <span class="text-primary font-bold" x-text="JSON.parse(pipelineJob.ai_analysis).score + '/10'"></span>
+                                        </div>
+                                    </template>
+                                </td>
+                                <td class="px-6 py-5 whitespace-nowrap text-sm text-slate-400 font-medium">
+                                    <span x-text="formatDate(pipelineJob.date_applied)"></span>
+                                </td>
+                                <td class="px-6 py-5 whitespace-nowrap text-right text-sm font-medium">
+                                    <button @click="deletePipelineJob(pipelineJob.id)" class="p-2 text-slate-500 hover:text-red-400 bg-slate-800/0 hover:bg-slate-800 rounded-lg transition-all opacity-0 group-hover:opacity-100">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    </button>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </template>
+    </div>
+</div>
+
+
+<!-- Resumes View -->
+<div x-show="currentView === 'resumes'" x-transition.opacity.duration.300ms x-cloak class="relative z-10">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-extrabold text-white tracking-tight">Your Resumes</h1>
+            <p class="text-slate-400 mt-2 text-sm">Upload standard PDFs for AI Analysis parsing.</p>
+        </div>
+        <button @click="isResumeModalOpen = true" class="mt-4 md:mt-0 inline-flex items-center px-5 py-2.5 bg-secondary hover:bg-violet-400 text-white text-sm font-bold rounded-xl shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all active:scale-95">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+            Upload Resume
+        </button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <template x-if="resumes.length === 0 && !loading">
+            <div class="col-span-full p-16 glass rounded-2xl border border-slate-700/50 border-dashed text-center">
+                <div class="w-16 h-16 bg-darkcard/50 ring-1 ring-white/10 text-slate-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                </div>
+                <h3 class="text-lg font-bold text-white">No Resumes Found</h3>
+                <p class="text-sm text-slate-400 mt-2">Upload a standard format PDF so the AI can parse and analyze your fit against job descriptions.</p>
+            </div>
+        </template>
+        <template x-for="resume in resumes" :key="resume.id">
+            <div class="glass rounded-2xl border-t border-l border-white/5 p-6 shadow-xl hover:shadow-primary/10 transition-shadow relative group">
+                <div class="w-14 h-14 rounded-xl bg-darkcard/80 flex items-center justify-center text-secondary mb-5 border border-slate-700/50 shadow-inner">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                </div>
+                <h4 class="font-bold text-white truncate text-lg tracking-tight" :title="resume.original_name" x-text="resume.original_name"></h4>
+                <p class="text-xs font-medium text-slate-400 mt-2" x-text="'Uploaded ' + formatDate(resume.upload_date)"></p>
+                
+                <div class="absolute top-5 right-5">
+                    <button @click="deleteResume(resume.id)" class="p-2.5 text-slate-500 bg-slate-800/50 hover:bg-red-500/20 hover:text-red-400 rounded-xl transition-all opacity-0 group-hover:opacity-100 backdrop-blur-sm shadow-sm ring-1 ring-white/5 hover:ring-red-500/30">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </template>
+    </div>
+</div>
+
+
+<!-- ═══════════════════════════════ GLOBAL MODALS (Accessible from all views) ═══════════════════════════════ -->
 
             <!-- Application Wizard Modal -->
             <div x-show="showWizard" x-transition.opacity class="fixed inset-0 z-[60] flex flex-col" style="display:none;" x-cloak>
@@ -1050,7 +1219,61 @@ $history = array_slice($history, 0, 5);
                 </div>
             </div>
 
-            <!-- Ask AI Chat Modal -->
+            
+            <!-- Mock Interview Modal -->
+            <div x-show="showMockInterview" x-transition.opacity class="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4" style="display:none;" x-cloak>
+                <div class="absolute inset-0 bg-black/80 backdrop-blur-md" @click="if(!isListening) showMockInterview = false"></div>
+                <div class="relative bg-[#080e1e] border border-slate-700/80 rounded-t-3xl sm:rounded-3xl shadow-2xl w-full sm:max-w-3xl flex flex-col z-10" style="height: 90vh; max-height: 800px;">
+                    <div class="flex items-center justify-between px-6 py-5 border-b border-slate-700/50 shrink-0 bg-slate-900/50">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/20">
+                                <i data-lucide="mic" class="w-6 h-6 text-white" :class="isListening ? 'animate-pulse text-red-100' : ''"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-black text-white tracking-tight">Mock Interview Session</h3>
+                                <p class="text-[11px] text-amber-400 font-bold uppercase tracking-widest mt-0.5" x-text="isListening ? 'Listening...' : 'Recruiter AI'"></p>
+                            </div>
+                        </div>
+                        <button @click="stopListening(); showMockInterview = false" class="p-2 text-slate-400 hover:text-white transition bg-slate-800 rounded-xl"><i data-lucide="x" class="w-5 h-5"></i></button>
+                    </div>
+                    
+                    <div class="flex-1 overflow-y-auto px-6 py-6 space-y-6 custom-scrollbar bg-darkbg" x-ref="mockMessagesContainer">
+                        <template x-for="(msg, idx) in mockMessages" :key="idx">
+                            <div :class="msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'">
+                                <div :class="msg.role === 'user' ? 'bg-amber-500/20 border border-amber-500/30 text-white rounded-2xl rounded-tr-sm' : 'bg-slate-800 border border-slate-700 text-slate-200 rounded-2xl rounded-tl-sm shadow-lg'" class="px-5 py-4 text-sm max-w-[85%] leading-relaxed">
+                                    <div x-text="msg.text"></div>
+                                </div>
+                            </div>
+                        </template>
+                        <div x-show="mockBusy" class="flex justify-start">
+                            <div class="bg-slate-800 border border-slate-700 rounded-2xl rounded-tl-sm px-5 py-4">
+                                <div class="flex space-x-2 items-center h-4">
+                                    <div class="w-2 h-2 bg-amber-500 rounded-full animate-bounce"></div>
+                                    <div class="w-2 h-2 bg-amber-500 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                                    <div class="w-2 h-2 bg-amber-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-5 border-t border-slate-700/50 bg-slate-900/80 shrink-0">
+                        <div class="flex items-center gap-3">
+                            <button @click="toggleVoiceInput()" :class="isListening ? 'bg-red-500 hover:bg-red-600 shadow-red-500/30' : 'bg-slate-700 hover:bg-slate-600 shadow-slate-900/50'" class="p-4 rounded-xl shadow-lg transition-all group flex-shrink-0">
+                                <i data-lucide="mic" class="w-6 h-6 text-white transition-transform group-active:scale-90" :class="isListening ? 'animate-pulse' : ''"></i>
+                            </button>
+                            
+                            <div class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-1 flex items-center shadow-inner">
+                                <textarea x-model="mockInput" @keydown.enter.prevent="if(!$event.shiftKey) sendMockMessage()" rows="2" placeholder="Type your answer, or use the microphone..." class="w-full bg-transparent text-sm text-white outline-none resize-none py-2 placeholder-slate-500 custom-scrollbar"></textarea>
+                            </div>
+                            
+                            <button @click="sendMockMessage()" :disabled="mockBusy || !mockInput.trim()" class="p-4 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg shadow-orange-500/20 hover:opacity-90 transition-all disabled:opacity-50 flex-shrink-0">
+                                <i data-lucide="send" class="w-6 h-6 text-white"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+<!-- Ask AI Chat Modal -->
             <div x-show="showAskAi" x-transition.opacity class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" style="display:none;" x-cloak>
                 <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" @click="showAskAi = false"></div>
                 <div class="relative bg-[#0d1526] border border-slate-700/80 rounded-t-3xl sm:rounded-3xl shadow-2xl w-full sm:max-w-2xl flex flex-col z-10" style="height: 85vh; max-height: 700px;">
@@ -1197,7 +1420,7 @@ $history = array_slice($history, 0, 5);
                     if (!this.editingHistoryItem || this.jobEditorSaving) return;
                     this.jobEditorSaving = true;
                     try {
-                        const res = await fetch('/api/update_history_job_description.php', {
+                        const res = await fetch('api/update_history_job_description.php', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -1236,7 +1459,7 @@ $history = array_slice($history, 0, 5);
 
                 toggleAutoGen() {
                     localStorage.setItem('jobpulse_autogen', this.autoGen);
-                    fetch('/api/update_user_preference.php', {
+                    fetch('api/update_user_preference.php', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ auto_generate_docs: this.autoGen })
@@ -1409,7 +1632,7 @@ $history = array_slice($history, 0, 5);
                     }, 400);
 
                     try {
-                        const res = await fetch('/api/analyze_job.php', {
+                        const res = await fetch('api/analyze_job.php', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -1510,7 +1733,7 @@ $history = array_slice($history, 0, 5);
                     }
                     if (fmt === 'pdf') {
                         try {
-                            const res = await fetch('/api/prepare_download.php', {
+                            const res = await fetch('api/prepare_download.php', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ content: doc, format: 'pdf', type: 'analysis', company: co, role: ro })
@@ -1530,14 +1753,167 @@ $history = array_slice($history, 0, 5);
                 },
 
                 // Ask AI Chat State
-                showAskAi: false,
+                
+                // Mock Interview State
+                showMockInterview: false,
+                mockMessages: [],
+                mockInput: '',
+                mockBusy: false,
+                isListening: false,
+                recognition: null,
+showAskAi: false,
                 activeTabId: null,
                 askAiTabs: [],
                 askAiInput: '',
                 askAiBusy: false,
                 aiWelcomeMsg: "Hi! I've been loaded with your job posting, optimized resume, and cover letter. Ask me anything — screening question help, interview prep, how to position your experience, or anything else about this application.",
 
-                openAskAi() {
+                
+                openMockInterview(item) {
+                    this.loadHistoryForAction(item, 'mock_interview');
+                },
+
+                initSpeechRecognition() {
+                    if (this.recognition) return;
+                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    if (!SpeechRecognition) {
+                        alert("Speech Recognition API is not supported in this browser. Please use Chrome or Edge.");
+                        return;
+                    }
+                    this.recognition = new SpeechRecognition();
+                    this.recognition.continuous = true;
+                    this.recognition.interimResults = true;
+                    this.recognition.lang = 'en-US';
+
+                    this.recognition.onstart = () => {
+                        this.isListening = true;
+                    };
+
+                    this.recognition.onresult = (event) => {
+                        let finalTranscript = '';
+                        let interimTranscript = '';
+                        for (let i = event.resultIndex; i < event.results.length; ++i) {
+                            if (event.results[i].isFinal) {
+                                finalTranscript += event.results[i][0].transcript;
+                            } else {
+                                interimTranscript += event.results[i][0].transcript;
+                            }
+                        }
+                        
+                        // Append final words, show interim playfully
+                        if (finalTranscript) {
+                            // Only append if it's not already handled, or just replace the last part
+                            // A simple implementation: we just set mockInput to final transcript if we were empty, 
+                            // otherwise append. To avoid duplication logic in continuous mode, we can just replace the whole text.
+                            // For simplicity, we just take the first final chunk and stop.
+                            this.mockInput += (this.mockInput ? ' ' : '') + finalTranscript;
+                            this.toggleVoiceInput(); // stop after one sentence/thought
+                        }
+                    };
+
+                    this.recognition.onerror = (event) => {
+                        console.error('Speech recognition error', event.error);
+                        this.isListening = false;
+                    };
+
+                    this.recognition.onend = () => {
+                        this.isListening = false;
+                    };
+                },
+
+                toggleVoiceInput() {
+                    if (!this.recognition) this.initSpeechRecognition();
+                    if (!this.recognition) return;
+                    
+                    if (this.isListening) {
+                        this.recognition.stop();
+                    } else {
+                        // Stop any ongoing speech synthesis
+                        window.speechSynthesis.cancel();
+                        this.recognition.start();
+                    }
+                },
+
+                stopListening() {
+                    if (this.recognition && this.isListening) {
+                        this.recognition.stop();
+                    }
+                    window.speechSynthesis.cancel();
+                },
+
+                speakText(text) {
+                    if (!window.speechSynthesis) return;
+                    window.speechSynthesis.cancel(); // stop previous
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.rate = 1.0;
+                    utterance.pitch = 1.0;
+                    
+                    // Optional: Try to find a good female/male professional voice
+                    const voices = window.speechSynthesis.getVoices();
+                    if(voices.length > 0) {
+                        const preferred = voices.find(v => v.name.includes('Google') && v.lang === 'en-US') || voices.find(v => v.lang === 'en-US');
+                        if (preferred) utterance.voice = preferred;
+                    }
+                    
+                    window.speechSynthesis.speak(utterance);
+                },
+
+                async sendMockMessage(init = false) {
+                    const msg = this.mockInput.trim();
+                    if (!msg && !init) return;
+                    if (this.mockBusy) return;
+
+                    if (!init) {
+                        this.mockInput = '';
+                        this.mockMessages.push({ role: 'user', text: msg });
+                        
+                        // Scroll
+                        this.$nextTick(() => {
+                            const el = this.$refs.mockMessagesContainer;
+                            if (el) el.scrollTop = el.scrollHeight;
+                        });
+                    }
+                    
+                    this.mockBusy = true;
+                    // Stop listening/speaking
+                    this.stopListening();
+                    
+                    try {
+                        const history = this.mockMessages.map(m => ({
+                            role: m.role, text: m.text
+                        }));
+
+                        const res = await fetch('api/mock_interview.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                message: init ? '' : msg,
+                                history: history,
+                                context: {
+                                    job_description: this.jobDescription || '',
+                                    resume_text: this.finalOptimizedText || ''
+                                }
+                            })
+                        });
+                        
+                        const data = await res.json();
+                        if (!data.success) throw new Error(data.error || 'Network error');
+                        
+                        this.mockMessages.push({ role: 'assistant', text: data.reply });
+                        this.speakText(data.reply);
+                        
+                    } catch (err) {
+                        this.mockMessages.push({ role: 'assistant', text: 'Error: ' + err.message });
+                    } finally {
+                        this.mockBusy = false;
+                        this.$nextTick(() => {
+                            const el = this.$refs.mockMessagesContainer;
+                            if (el) el.scrollTop = el.scrollHeight;
+                            if (window.lucide) window.lucide.createIcons();
+                        });
+                    }
+                },
+openAskAi() {
                     this.showAskAi = true;
                     // If no tabs exist, create the first one
                     if (this.askAiTabs.length === 0) {
@@ -1628,7 +2004,7 @@ $history = array_slice($history, 0, 5);
                             role: m.role === 'user' ? 'user' : 'assistant',
                             text: m.text
                         }));
-                        const res = await fetch('/api/ask_ai.php', {
+                        const res = await fetch('api/ask_ai.php', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -1686,7 +2062,8 @@ $history = array_slice($history, 0, 5);
                     // Persistence and Automatic Refresh
                     this.$watch('currentView', (view) => {
                         localStorage.setItem('jobpulse_last_view', view);
-                        if (view === 'my_jobs') this.fetchHistory();
+                                                if (view === 'dashboard') this.fetchPipelineJobs();
+if (view === 'my_jobs') this.fetchHistory();
                         if (view === 'find_jobs') this.fetchJobs();
                         if (view === 'vibe_check') this.fetchResumes();
                         
@@ -1696,7 +2073,8 @@ $history = array_slice($history, 0, 5);
                     });
 
                     // Initial fetch for the starting view
-                    if (this.currentView === 'my_jobs') this.fetchHistory();
+                                        if (this.currentView === 'dashboard') this.fetchPipelineJobs();
+if (this.currentView === 'my_jobs') this.fetchHistory();
                     if (this.currentView === 'find_jobs') this.fetchJobs();
                     if (this.currentView === 'vibe_check') this.fetchResumes();
 
@@ -1706,9 +2084,82 @@ $history = array_slice($history, 0, 5);
                     });
                 },
 
-                async fetchHistory() {
+                
+                async fetchPipelineJobs() {
+                    this.pipelineLoading = true;
                     try {
-                        const res = await fetch('/api/history.php');
+                        const res = await fetch('api/jobs.php');
+                        if (res.ok) {
+                            this.pipelineJobs = await res.json();
+                            setTimeout(() => { if(window.lucide) window.lucide.createIcons(); }, 100);
+                        }
+                    } catch (e) {
+                        console.error('Failed to fetch pipeline jobs', e);
+                    } finally {
+                        this.pipelineLoading = false;
+                    }
+                },
+                async submitJob() {
+                    try {
+                        const res = await fetch('api/jobs.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(this.jobForm)
+                        });
+                        if (res.ok) {
+                            alert('Job added successfully!');
+                            this.isJobModalOpen = false;
+                            this.jobForm = { company_name: '', job_title: '', status: 'Applied', notes: '' };
+                            await this.fetchPipelineJobs();
+                        } else {
+                            alert('Failed to add job.');
+                        }
+                    } catch (e) {}
+                },
+                async submitAnalysis() {
+                    this.analyzing = true;
+                    try {
+                        const res = await fetch('analyze.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(this.analyzeForm)
+                        });
+                        const data = await res.json();
+                        if (res.ok && data.success) {
+                            alert('Job analyzed and saved!');
+                            this.isAnalyzeModalOpen = false;
+                            this.analyzeForm = { company_name: '', job_title: '', job_description: '', resume_id: '' };
+                            await this.fetchPipelineJobs();
+                            this.currentView = 'dashboard';
+                        } else {
+                            alert(data.error || 'Analysis failed.');
+                        }
+                    } catch (e) {} finally {
+                        this.analyzing = false;
+                    }
+                },
+                async deletePipelineJob(id) {
+                    if(!confirm('Delete this job?')) return;
+                    try {
+                        const res = await fetch(`/api/jobs.php?id=${id}`, { method: 'DELETE' });
+                        if(res.ok) {
+                            await this.fetchPipelineJobs();
+                        }
+                    } catch (e) {}
+                },
+                getStatusColor(status) {
+                    const colors = {
+                        'Applied': 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+                        'Interviewing': 'bg-purple-500/20 text-purple-300 border-purple-500/30',
+                        'Offer': 'bg-green-500/20 text-green-300 border-green-500/30',
+                        'Rejected': 'bg-red-500/20 text-red-300 border-red-500/30',
+                        'Analyzed': 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30'
+                    };
+                    return colors[status] || 'bg-slate-700 text-slate-300 border-slate-600';
+                },
+async fetchHistory() {
+                    try {
+                        const res = await fetch('api/history.php');
                         const data = await res.json();
                         if (data.success) {
                             this.history = data.history;
@@ -1731,7 +2182,7 @@ $history = array_slice($history, 0, 5);
                 
                 async fetchResumes() {
                     try {
-                        const res = await fetch('/api/resumes.php');
+                        const res = await fetch('api/resumes.php');
                         const data = await res.json();
                         if (data.success) {
                             this.resumes = data.resumes;
@@ -1771,7 +2222,7 @@ $history = array_slice($history, 0, 5);
                     this.generalizeBusy = true;
                     this.generalizeError = null;
                     try {
-                        const res = await fetch('/api/generalize_resume.php', {
+                        const res = await fetch('api/generalize_resume.php', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -1819,7 +2270,7 @@ $history = array_slice($history, 0, 5);
                     fd.append('category', this.newCategory || 'General');
                     
                     try {
-                        const res = await fetch('/api/upload_resume.php', { method: 'POST', body: fd });
+                        const res = await fetch('api/upload_resume.php', { method: 'POST', body: fd });
                         const data = await res.json();
                         if (data.success) {
                             this.showUploadModal = false;
@@ -1838,7 +2289,7 @@ $history = array_slice($history, 0, 5);
 
                 async setPrimary(id) {
                     try {
-                        const res = await fetch('/api/resumes.php', {
+                        const res = await fetch('api/resumes.php', {
                             method: 'POST', body: JSON.stringify({ action: 'set_primary', resume_id: id })
                         });
                         const data = await res.json();
@@ -1849,7 +2300,7 @@ $history = array_slice($history, 0, 5);
                 async deleteResume(id) {
                     if(!confirm("Are you sure you want to delete this resume?")) return;
                     try {
-                        const res = await fetch('/api/resumes.php', {
+                        const res = await fetch('api/resumes.php', {
                             method: 'POST', body: JSON.stringify({ action: 'delete', resume_id: id })
                         });
                         const data = await res.json();
@@ -1871,7 +2322,7 @@ $history = array_slice($history, 0, 5);
                     this.finalOptimizedText = null; this.finalResultObj = null; this.missingSkillsAlert = []; this.pendingOptimizedObj = null;
 
                     try {
-                        const res = await fetch('/api/optimize_resume.php', {
+                        const res = await fetch('api/optimize_resume.php', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ 
@@ -1913,7 +2364,7 @@ $history = array_slice($history, 0, 5);
                 async downloadCombinedPDF() {
                     if (!this.finalOptimizedText || !this.finalResultObj?.cover_letter) return;
                     try {
-                        const res = await fetch('/api/prepare_download.php', {
+                        const res = await fetch('api/prepare_download.php', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -1962,7 +2413,7 @@ $history = array_slice($history, 0, 5);
                     }
 
                     try {
-                        const res = await fetch('/api/prepare_download.php', {
+                        const res = await fetch('api/prepare_download.php', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -2007,7 +2458,7 @@ $history = array_slice($history, 0, 5);
                 async downloadPDF(content, type) {
                     if (!content) return;
                     try {
-                        const res = await fetch('/api/prepare_download.php', {
+                        const res = await fetch('api/prepare_download.php', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -2070,6 +2521,10 @@ $history = array_slice($history, 0, 5);
                                 this.askAiTabs = [];
                                 this.activeTabId = null;
                                 this.openAskAi();
+                            } else if (action === 'mock_interview') {
+                                this.mockMessages = [];
+                                this.showMockInterview = true;
+                                this.sendMockMessage(true); // initialize
                             }
                         } catch (err) {
                             console.error("History action failed", err);
@@ -2082,7 +2537,7 @@ $history = array_slice($history, 0, 5);
                     event.stopPropagation();
                     if (!confirm('Remove this application from your history?')) return;
                     try {
-                        await fetch('/api/delete_history.php', {
+                        await fetch('api/delete_history.php', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ id })
@@ -2096,7 +2551,7 @@ $history = array_slice($history, 0, 5);
                     if (item._saving) return;
                     item._saving = true;
                     try {
-                        const res = await fetch('/api/update_job_details.php', {
+                        const res = await fetch('api/update_job_details.php', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -2123,7 +2578,7 @@ $history = array_slice($history, 0, 5);
                     if (!text.trim() && status === 'Custom') return;
 
                     try {
-                        const res = await fetch('/api/update_job_note.php', {
+                        const res = await fetch('api/update_job_note.php', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ job_id: item.id, status: status, text: text })
@@ -2139,7 +2594,7 @@ $history = array_slice($history, 0, 5);
                 },
 
                 async logout() {
-                    await fetch('/api/auth.php?action=logout', { method: 'POST' });
+                    await fetch('api/auth.php?action=logout', { method: 'POST' });
                     window.location.reload();
                 }
             }
