@@ -27,7 +27,10 @@
 *   **Context-Aware Chat**: A real-time chat interface where the AI knows about the job you're looking at and your resume.
 *   **Strategy Sessions**: Ask for advice on salary negotiation, follow-up emails, or how to explain a gap in employment.
 
-### 🗃️ 5. Application History & management
+### 🎤 5. Mock Interview Mode
+*   **Recruiter Simulation**: A voice/text interface to practice answering the specific questions generated in the Tactical Analysis.
+
+### 🗃️ 6. Application History & management
 *   **Personal Vault**: Every application is saved with its unique tailored resume, cover letter, and analysis.
 *   **Notes & Tracking**: Add status updates (Applied, Interviewing, Offer, Rejected) and keep personal notes for each lead.
 *   **Quick Downloads**: Instant PDF generation for all your tailored documents.
@@ -48,7 +51,6 @@
 
 We are constantly improving JobPulse AI. The following features are currently in development:
 
-*   **[ ] Mock Interview Mode**: A voice/text interface to practice answering the specific questions generated in the Tactical Analysis.
 *   **[ ] Auto-Fill Integration**: Browser extension to help auto-fill application forms using your saved resumes.
 *   **[ ] Advanced Analytics Dashboard**: Visualizing your application conversion rate and identifying which resume versions perform best.
 *   **[ ] LinkedIn Integration**: Direct import of job postings via URL bookmarklet.
