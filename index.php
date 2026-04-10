@@ -266,6 +266,29 @@ $history = array_slice($history, 0, 5);
                             <button @click="currentView = 'resumes'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'resumes' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
                                 <i data-lucide="file-badge" class="mr-3 h-5 w-5 opacity-100"></i> Resumes
                             </button>
+
+                            <div class="pt-4 pb-2">
+                                <p class="px-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Coming Soon</p>
+                            </div>
+
+                            <button disabled class="w-full group flex items-center justify-between px-4 py-3 text-sm font-bold rounded-xl border border-transparent text-slate-600 bg-slate-800/30 cursor-not-allowed">
+                                <div class="flex items-center">
+                                    <i data-lucide="bar-chart-2" class="mr-3 h-5 w-5 opacity-50"></i> Analytics
+                                </div>
+                                <span class="text-[9px] uppercase tracking-wider font-bold bg-slate-700/50 text-slate-400 px-2 py-0.5 rounded-full">Soon</span>
+                            </button>
+                            <button disabled class="w-full group flex items-center justify-between px-4 py-3 text-sm font-bold rounded-xl border border-transparent text-slate-600 bg-slate-800/30 cursor-not-allowed">
+                                <div class="flex items-center">
+                                    <i data-lucide="chrome" class="mr-3 h-5 w-5 opacity-50"></i> Auto-Fill Ext
+                                </div>
+                                <span class="text-[9px] uppercase tracking-wider font-bold bg-slate-700/50 text-slate-400 px-2 py-0.5 rounded-full">Soon</span>
+                            </button>
+                            <button disabled class="w-full group flex items-center justify-between px-4 py-3 text-sm font-bold rounded-xl border border-transparent text-slate-600 bg-slate-800/30 cursor-not-allowed">
+                                <div class="flex items-center">
+                                    <i data-lucide="linkedin" class="mr-3 h-5 w-5 opacity-50"></i> LinkedIn Sync
+                                </div>
+                                <span class="text-[9px] uppercase tracking-wider font-bold bg-slate-700/50 text-slate-400 px-2 py-0.5 rounded-full">Soon</span>
+                            </button>
 </nav>
                     </div>
                     <div class="flex-shrink-0 flex border-t border-slate-700/50 p-4 bg-darkbg/30">
