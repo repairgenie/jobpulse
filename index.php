@@ -266,6 +266,24 @@ $history = array_slice($history, 0, 5);
                             <button @click="currentView = 'resumes'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'resumes' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
                                 <i data-lucide="file-badge" class="mr-3 h-5 w-5 opacity-100"></i> Resumes
                             </button>
+
+                            <div class="mt-8 px-4">
+                                <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Coming Soon</h3>
+                                <div class="space-y-1">
+                                    <div class="group flex items-center px-3 py-2 text-sm font-bold rounded-xl text-slate-500 cursor-not-allowed opacity-60">
+                                        <i data-lucide="mic" class="mr-3 h-4 w-4"></i> Mock Interview Mode
+                                    </div>
+                                    <div class="group flex items-center px-3 py-2 text-sm font-bold rounded-xl text-slate-500 cursor-not-allowed opacity-60">
+                                        <i data-lucide="pie-chart" class="mr-3 h-4 w-4"></i> Analytics Dashboard
+                                    </div>
+                                    <div class="group flex items-center px-3 py-2 text-sm font-bold rounded-xl text-slate-500 cursor-not-allowed opacity-60">
+                                        <i data-lucide="linkedin" class="mr-3 h-4 w-4"></i> LinkedIn Import
+                                    </div>
+                                    <div class="group flex items-center px-3 py-2 text-sm font-bold rounded-xl text-slate-500 cursor-not-allowed opacity-60">
+                                        <i data-lucide="form-input" class="mr-3 h-4 w-4"></i> Auto-Fill Extension
+                                    </div>
+                                </div>
+                            </div>
 </nav>
                     </div>
                     <div class="flex-shrink-0 flex border-t border-slate-700/50 p-4 bg-darkbg/30">
