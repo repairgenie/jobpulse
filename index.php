@@ -266,7 +266,23 @@ $history = array_slice($history, 0, 5);
                             <button @click="currentView = 'resumes'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'resumes' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
                                 <i data-lucide="file-badge" class="mr-3 h-5 w-5 opacity-100"></i> Resumes
                             </button>
-</nav>
+
+                            <div class="mt-6 pt-4 border-t border-slate-700/50">
+                                <h3 class="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Coming Soon</h3>
+                                <button @click="alert('Mock Interview Mode is coming soon!')" class="w-full group flex items-center px-4 py-2 text-xs font-medium text-slate-500 hover:text-slate-300 rounded-lg transition-all cursor-not-allowed">
+                                    <i data-lucide="mic" class="mr-3 h-4 w-4 opacity-70"></i> Mock Interview Mode
+                                </button>
+                                <button @click="alert('Advanced Analytics Dashboard is coming soon!')" class="w-full group flex items-center px-4 py-2 text-xs font-medium text-slate-500 hover:text-slate-300 rounded-lg transition-all cursor-not-allowed">
+                                    <i data-lucide="bar-chart-2" class="mr-3 h-4 w-4 opacity-70"></i> Advanced Analytics
+                                </button>
+                                <button @click="alert('LinkedIn Integration is coming soon!')" class="w-full group flex items-center px-4 py-2 text-xs font-medium text-slate-500 hover:text-slate-300 rounded-lg transition-all cursor-not-allowed">
+                                    <i data-lucide="link" class="mr-3 h-4 w-4 opacity-70"></i> LinkedIn Import
+                                </button>
+                                <button @click="alert('Auto-Fill Extension is coming soon!')" class="w-full group flex items-center px-4 py-2 text-xs font-medium text-slate-500 hover:text-slate-300 rounded-lg transition-all cursor-not-allowed">
+                                    <i data-lucide="form-input" class="mr-3 h-4 w-4 opacity-70"></i> Auto-Fill Extension
+                                </button>
+                            </div>
+                        </nav>
                     </div>
                     <div class="flex-shrink-0 flex border-t border-slate-700/50 p-4 bg-darkbg/30">
                         <div class="flex items-center">
