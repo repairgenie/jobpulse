@@ -266,6 +266,22 @@ $history = array_slice($history, 0, 5);
                             <button @click="currentView = 'resumes'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'resumes' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
                                 <i data-lucide="file-badge" class="mr-3 h-5 w-5 opacity-100"></i> Resumes
                             </button>
+
+                            <div class="pt-4 pb-2">
+                                <p class="px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Coming Soon</p>
+                            </div>
+                            <button disabled class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all opacity-50 cursor-not-allowed text-slate-400 border-transparent">
+                                <i data-lucide="mic" class="mr-3 h-5 w-5 opacity-100"></i> Mock Interview Mode
+                            </button>
+                            <button disabled class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all opacity-50 cursor-not-allowed text-slate-400 border-transparent">
+                                <i data-lucide="bar-chart" class="mr-3 h-5 w-5 opacity-100"></i> Advanced Analytics
+                            </button>
+                            <button disabled class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all opacity-50 cursor-not-allowed text-slate-400 border-transparent">
+                                <i data-lucide="link" class="mr-3 h-5 w-5 opacity-100"></i> LinkedIn Import
+                            </button>
+                            <button disabled class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all opacity-50 cursor-not-allowed text-slate-400 border-transparent">
+                                <i data-lucide="form-input" class="mr-3 h-5 w-5 opacity-100"></i> Auto-Fill Extension
+                            </button>
 </nav>
                     </div>
                     <div class="flex-shrink-0 flex border-t border-slate-700/50 p-4 bg-darkbg/30">
