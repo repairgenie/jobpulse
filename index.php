@@ -266,7 +266,23 @@ $history = array_slice($history, 0, 5);
                             <button @click="currentView = 'resumes'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'resumes' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
                                 <i data-lucide="file-badge" class="mr-3 h-5 w-5 opacity-100"></i> Resumes
                             </button>
-</nav>
+
+                            <div class="mt-8 mb-2 px-4">
+                                <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest">Coming Soon</h3>
+                            </div>
+                            <button @click="currentView = 'coming_soon'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'coming_soon' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                <i data-lucide="mic" class="mr-3 h-5 w-5 opacity-100"></i> Mock Interview
+                            </button>
+                            <button @click="currentView = 'coming_soon'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'coming_soon' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                <i data-lucide="bar-chart-2" class="mr-3 h-5 w-5 opacity-100"></i> Analytics
+                            </button>
+                            <button @click="currentView = 'coming_soon'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'coming_soon' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                <i data-lucide="linkedin" class="mr-3 h-5 w-5 opacity-100"></i> LinkedIn Import
+                            </button>
+                            <button @click="currentView = 'coming_soon'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'coming_soon' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                <i data-lucide="puzzle" class="mr-3 h-5 w-5 opacity-100"></i> Auto-Fill Ext
+                            </button>
+                        </nav>
                     </div>
                     <div class="flex-shrink-0 flex border-t border-slate-700/50 p-4 bg-darkbg/30">
                         <div class="flex items-center">
@@ -288,6 +304,19 @@ $history = array_slice($history, 0, 5);
         </div>
 
         <main class="flex-1 relative z-0 overflow-y-auto focus:outline-none custom-scrollbar pb-20 md:pb-0">
+
+            <!-- COMING SOON VIEW -->
+            <div x-show="currentView === 'coming_soon'" class="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-12" style="display:none;" x-cloak>
+                <div class="mb-10 text-center">
+                    <h1 class="text-3xl md:text-5xl font-extrabold text-white mb-3 tracking-tight drop-shadow-md">Coming Soon!</h1>
+                    <p class="text-slate-400 text-sm md:text-base font-medium max-w-2xl mx-auto">This feature is currently under active development. Stay tuned for the next major release!</p>
+                </div>
+                <div class="bg-card border border-slate-700 rounded-2xl p-12 text-center text-slate-400 max-w-2xl mx-auto shadow-xl">
+                    <i data-lucide="rocket" class="w-16 h-16 mx-auto mb-6 opacity-50 text-primary"></i>
+                    <h3 class="text-xl font-bold text-white mb-2">We're working on it</h3>
+                    <p class="text-sm">JobPulse AI is continuously evolving. Our engineers are polishing this functionality to provide you with an enterprise-grade experience.</p>
+                </div>
+            </div>
             
             <!-- VIBE CHECK VIEW -->
             <div x-show="currentView === 'vibe_check'" class="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-12" style="display:none;">
