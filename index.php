@@ -266,6 +266,19 @@ $history = array_slice($history, 0, 5);
                             <button @click="currentView = 'resumes'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'resumes' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
                                 <i data-lucide="file-badge" class="mr-3 h-5 w-5 opacity-100"></i> Resumes
                             </button>
+
+                            <div class="pt-4 pb-2">
+                                <p class="px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Coming Soon</p>
+                            </div>
+                            <button @click="currentView = 'auto_fill'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'auto_fill' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                <i data-lucide="form-input" class="mr-3 h-5 w-5 opacity-100"></i> Auto-Fill
+                            </button>
+                            <button @click="currentView = 'analytics'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'analytics' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                <i data-lucide="bar-chart-2" class="mr-3 h-5 w-5 opacity-100"></i> Analytics
+                            </button>
+                            <button @click="currentView = 'linkedin'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'linkedin' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                <i data-lucide="linkedin" class="mr-3 h-5 w-5 opacity-100"></i> LinkedIn
+                            </button>
 </nav>
                     </div>
                     <div class="flex-shrink-0 flex border-t border-slate-700/50 p-4 bg-darkbg/30">
@@ -288,6 +301,42 @@ $history = array_slice($history, 0, 5);
         </div>
 
         <main class="flex-1 relative z-0 overflow-y-auto focus:outline-none custom-scrollbar pb-20 md:pb-0">
+
+            <div x-show="currentView === 'auto_fill'" class="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-12" style="display:none;" x-cloak>
+                <div class="bg-gradient-to-br from-[#1e293b] to-slate-900 border border-slate-700/80 rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden">
+                    <div class="min-w-0">
+                        <h4 class="text-base font-bold text-amber-500 mb-1">Feature Under Construction</h4>
+                        <p class="text-sm text-slate-300 font-medium leading-relaxed">
+                            Please note that the <strong class="text-white">Auto-Fill Integration</strong> feature is currently <strong class="text-amber-500">not fully implemented</strong>.
+                            We are working on a browser extension to help auto-fill application forms using your saved resumes.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div x-show="currentView === 'analytics'" class="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-12" style="display:none;" x-cloak>
+                <div class="bg-gradient-to-br from-[#1e293b] to-slate-900 border border-slate-700/80 rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden">
+                    <div class="min-w-0">
+                        <h4 class="text-base font-bold text-amber-500 mb-1">Feature Under Construction</h4>
+                        <p class="text-sm text-slate-300 font-medium leading-relaxed">
+                            Please note that the <strong class="text-white">Advanced Analytics Dashboard</strong> feature is currently <strong class="text-amber-500">not fully implemented</strong>.
+                            We are working on visualizing your application conversion rate and identifying which resume versions perform best.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div x-show="currentView === 'linkedin'" class="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-12" style="display:none;" x-cloak>
+                <div class="bg-gradient-to-br from-[#1e293b] to-slate-900 border border-slate-700/80 rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden">
+                    <div class="min-w-0">
+                        <h4 class="text-base font-bold text-amber-500 mb-1">Feature Under Construction</h4>
+                        <p class="text-sm text-slate-300 font-medium leading-relaxed">
+                            Please note that the <strong class="text-white">LinkedIn Integration</strong> feature is currently <strong class="text-amber-500">not fully implemented</strong>.
+                            We are working on direct import of job postings via URL bookmarklet.
+                        </p>
+                    </div>
+                </div>
+            </div>
             
             <!-- VIBE CHECK VIEW -->
             <div x-show="currentView === 'vibe_check'" class="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-12" style="display:none;">
