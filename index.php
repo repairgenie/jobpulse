@@ -266,6 +266,15 @@ $history = array_slice($history, 0, 5);
                             <button @click="currentView = 'resumes'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'resumes' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
                                 <i data-lucide="file-badge" class="mr-3 h-5 w-5 opacity-100"></i> Resumes
                             </button>
+                            <button @click="currentView = 'autofill'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'autofill' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                <i data-lucide="form-input" class="mr-3 h-5 w-5 opacity-100"></i> Auto-Fill
+                            </button>
+                            <button @click="currentView = 'analytics'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'analytics' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                <i data-lucide="pie-chart" class="mr-3 h-5 w-5 opacity-100"></i> Analytics
+                            </button>
+                            <button @click="currentView = 'linkedin'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'linkedin' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                <i data-lucide="linkedin" class="mr-3 h-5 w-5 opacity-100"></i> LinkedIn
+                            </button>
 </nav>
                     </div>
                     <div class="flex-shrink-0 flex border-t border-slate-700/50 p-4 bg-darkbg/30">
@@ -1004,6 +1013,48 @@ $history = array_slice($history, 0, 5);
     </div>
 </div>
 
+
+<!-- AUTO-FILL VIEW -->
+<div x-show="currentView === 'autofill'" class="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-12" style="display:none;" x-cloak>
+    <div class="mb-10">
+        <h1 class="text-3xl md:text-5xl font-extrabold text-white mb-3 tracking-tight drop-shadow-md">Auto-Fill Settings</h1>
+    </div>
+    <div class="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-10 text-center flex flex-col items-center">
+        <div class="w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center mb-4 border border-amber-500/20">
+            <i data-lucide="construction" class="w-8 h-8 text-amber-500"></i>
+        </div>
+        <h4 class="text-lg font-bold text-amber-500 mb-2">Feature Under Construction</h4>
+        <p class="text-slate-400 text-sm max-w-md">The Auto-Fill extension feature is currently pending development. Please check back later for updates.</p>
+    </div>
+</div>
+
+<!-- ANALYTICS VIEW -->
+<div x-show="currentView === 'analytics'" class="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-12" style="display:none;" x-cloak>
+    <div class="mb-10">
+        <h1 class="text-3xl md:text-5xl font-extrabold text-white mb-3 tracking-tight drop-shadow-md">Analytics Dashboard</h1>
+    </div>
+    <div class="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-10 text-center flex flex-col items-center">
+        <div class="w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center mb-4 border border-amber-500/20">
+            <i data-lucide="construction" class="w-8 h-8 text-amber-500"></i>
+        </div>
+        <h4 class="text-lg font-bold text-amber-500 mb-2">Feature Under Construction</h4>
+        <p class="text-slate-400 text-sm max-w-md">Advanced analytics and success rate charts are currently pending development.</p>
+    </div>
+</div>
+
+<!-- LINKEDIN VIEW -->
+<div x-show="currentView === 'linkedin'" class="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-12" style="display:none;" x-cloak>
+    <div class="mb-10">
+        <h1 class="text-3xl md:text-5xl font-extrabold text-white mb-3 tracking-tight drop-shadow-md">LinkedIn Integration</h1>
+    </div>
+    <div class="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-10 text-center flex flex-col items-center">
+        <div class="w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center mb-4 border border-amber-500/20">
+            <i data-lucide="construction" class="w-8 h-8 text-amber-500"></i>
+        </div>
+        <h4 class="text-lg font-bold text-amber-500 mb-2">Feature Under Construction</h4>
+        <p class="text-slate-400 text-sm max-w-md">LinkedIn account synchronization and profile extraction are currently pending development.</p>
+    </div>
+</div>
 
 <!-- Resumes View -->
 <div x-show="currentView === 'resumes'" x-transition.opacity.duration.300ms x-cloak class="relative z-10">
