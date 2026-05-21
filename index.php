@@ -266,7 +266,25 @@ $history = array_slice($history, 0, 5);
                             <button @click="currentView = 'resumes'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'resumes' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
                                 <i data-lucide="file-badge" class="mr-3 h-5 w-5 opacity-100"></i> Resumes
                             </button>
-</nav>
+
+                            <div class="pt-6 pb-2">
+                                <h3 class="px-4 text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Coming Soon</h3>
+                                <div class="space-y-2">
+                                    <button disabled class="w-full group flex items-center px-4 py-2.5 text-sm font-bold rounded-xl border border-transparent text-slate-500 bg-slate-800/20 cursor-not-allowed">
+                                        <i data-lucide="mic" class="mr-3 h-4 w-4 opacity-50"></i> Mock Interview
+                                    </button>
+                                    <button disabled class="w-full group flex items-center px-4 py-2.5 text-sm font-bold rounded-xl border border-transparent text-slate-500 bg-slate-800/20 cursor-not-allowed">
+                                        <i data-lucide="bar-chart-2" class="mr-3 h-4 w-4 opacity-50"></i> Analytics
+                                    </button>
+                                    <button disabled class="w-full group flex items-center px-4 py-2.5 text-sm font-bold rounded-xl border border-transparent text-slate-500 bg-slate-800/20 cursor-not-allowed">
+                                        <i data-lucide="linkedin" class="mr-3 h-4 w-4 opacity-50"></i> LinkedIn Import
+                                    </button>
+                                    <button disabled class="w-full group flex items-center px-4 py-2.5 text-sm font-bold rounded-xl border border-transparent text-slate-500 bg-slate-800/20 cursor-not-allowed">
+                                        <i data-lucide="form-input" class="mr-3 h-4 w-4 opacity-50"></i> Auto-Fill
+                                    </button>
+                                </div>
+                            </div>
+                        </nav>
                     </div>
                     <div class="flex-shrink-0 flex border-t border-slate-700/50 p-4 bg-darkbg/30">
                         <div class="flex items-center">
