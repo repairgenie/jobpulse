@@ -266,7 +266,24 @@ $history = array_slice($history, 0, 5);
                             <button @click="currentView = 'resumes'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'resumes' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
                                 <i data-lucide="file-badge" class="mr-3 h-5 w-5 opacity-100"></i> Resumes
                             </button>
-</nav>
+
+                            <!-- Coming Soon Features -->
+                            <div class="pt-4 mt-4 border-t border-slate-700/50">
+                                <p class="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Coming Soon</p>
+                                <button @click="currentView = 'mock_interview'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'mock_interview' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                    <i data-lucide="mic" class="mr-3 h-5 w-5 opacity-100"></i> Mock Interview
+                                </button>
+                                <button @click="currentView = 'analytics'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'analytics' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                    <i data-lucide="bar-chart-2" class="mr-3 h-5 w-5 opacity-100"></i> Analytics
+                                </button>
+                                <button @click="currentView = 'linkedin_import'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'linkedin_import' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                    <i data-lucide="linkedin" class="mr-3 h-5 w-5 opacity-100"></i> LinkedIn Import
+                                </button>
+                                <button @click="currentView = 'auto_fill'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'auto_fill' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                    <i data-lucide="form-input" class="mr-3 h-5 w-5 opacity-100"></i> Auto-Fill Extension
+                                </button>
+                            </div>
+                        </nav>
                     </div>
                     <div class="flex-shrink-0 flex border-t border-slate-700/50 p-4 bg-darkbg/30">
                         <div class="flex items-center">
@@ -290,6 +307,39 @@ $history = array_slice($history, 0, 5);
         <main class="flex-1 relative z-0 overflow-y-auto focus:outline-none custom-scrollbar pb-20 md:pb-0">
             
             <!-- VIBE CHECK VIEW -->
+
+            <!-- Coming Soon Views -->
+            <div x-show="currentView === 'mock_interview'" class="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-12" style="display:none;" x-cloak>
+                <div class="bg-card/80 backdrop-blur-xl border border-slate-700/50 shadow-2xl rounded-3xl p-8 text-center">
+                    <i data-lucide="mic" class="w-16 h-16 text-primary mx-auto mb-4"></i>
+                    <h2 class="text-3xl font-extrabold text-white mb-2">Mock Interview Mode</h2>
+                    <p class="text-slate-400">A voice/text interface to practice answering specific questions generated in the Tactical Analysis is coming soon.</p>
+                </div>
+            </div>
+
+            <div x-show="currentView === 'analytics'" class="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-12" style="display:none;" x-cloak>
+                <div class="bg-card/80 backdrop-blur-xl border border-slate-700/50 shadow-2xl rounded-3xl p-8 text-center">
+                    <i data-lucide="bar-chart-2" class="w-16 h-16 text-primary mx-auto mb-4"></i>
+                    <h2 class="text-3xl font-extrabold text-white mb-2">Advanced Analytics Dashboard</h2>
+                    <p class="text-slate-400">Visualizing your application conversion rate and identifying which resume versions perform best is coming soon.</p>
+                </div>
+            </div>
+
+            <div x-show="currentView === 'linkedin_import'" class="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-12" style="display:none;" x-cloak>
+                <div class="bg-card/80 backdrop-blur-xl border border-slate-700/50 shadow-2xl rounded-3xl p-8 text-center">
+                    <i data-lucide="linkedin" class="w-16 h-16 text-primary mx-auto mb-4"></i>
+                    <h2 class="text-3xl font-extrabold text-white mb-2">LinkedIn Integration</h2>
+                    <p class="text-slate-400">Direct import of job postings via URL bookmarklet is coming soon.</p>
+                </div>
+            </div>
+
+            <div x-show="currentView === 'auto_fill'" class="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-12" style="display:none;" x-cloak>
+                <div class="bg-card/80 backdrop-blur-xl border border-slate-700/50 shadow-2xl rounded-3xl p-8 text-center">
+                    <i data-lucide="form-input" class="w-16 h-16 text-primary mx-auto mb-4"></i>
+                    <h2 class="text-3xl font-extrabold text-white mb-2">Auto-Fill Extension</h2>
+                    <p class="text-slate-400">Browser extension to help auto-fill application forms using your saved resumes is coming soon.</p>
+                </div>
+            </div>
             <div x-show="currentView === 'vibe_check'" class="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-12" style="display:none;">
                 <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
                     <div>
