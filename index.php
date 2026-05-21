@@ -266,6 +266,23 @@ $history = array_slice($history, 0, 5);
                             <button @click="currentView = 'resumes'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'resumes' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
                                 <i data-lucide="file-badge" class="mr-3 h-5 w-5 opacity-100"></i> Resumes
                             </button>
+
+                            <!-- Coming Soon Section -->
+                            <div class="pt-6 pb-2">
+                                <p class="px-4 text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Coming Soon</p>
+                                <button onclick="alert('Mock Interview Mode is coming soon!')" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border border-transparent text-slate-500 hover:text-slate-400 transition-all cursor-not-allowed">
+                                    <i data-lucide="mic" class="mr-3 h-5 w-5 opacity-50"></i> Mock Interview
+                                </button>
+                                <button onclick="alert('Advanced Analytics Dashboard is coming soon!')" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border border-transparent text-slate-500 hover:text-slate-400 transition-all cursor-not-allowed">
+                                    <i data-lucide="bar-chart-2" class="mr-3 h-5 w-5 opacity-50"></i> Analytics
+                                </button>
+                                <button onclick="alert('LinkedIn Integration is coming soon!')" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border border-transparent text-slate-500 hover:text-slate-400 transition-all cursor-not-allowed">
+                                    <i data-lucide="linkedin" class="mr-3 h-5 w-5 opacity-50"></i> LinkedIn Import
+                                </button>
+                                <button onclick="alert('Auto-Fill Extension is coming soon!')" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border border-transparent text-slate-500 hover:text-slate-400 transition-all cursor-not-allowed">
+                                    <i data-lucide="puzzle" class="mr-3 h-5 w-5 opacity-50"></i> Auto-Fill Ext.
+                                </button>
+                            </div>
 </nav>
                     </div>
                     <div class="flex-shrink-0 flex border-t border-slate-700/50 p-4 bg-darkbg/30">
