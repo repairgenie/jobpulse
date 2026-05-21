@@ -92,7 +92,8 @@ try {
     ]);
 
 } catch (Exception $e) {
+    error_log("Generalize Resume Error: " . $e->getMessage());
     if (ob_get_level() > 0) ob_end_clean();
     http_response_code(500);
-    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    echo json_encode(['success' => false, 'error' => 'An error occurred while generalizing the resume.']);
 }

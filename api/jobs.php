@@ -66,6 +66,7 @@ try {
             break;
     }
 } catch (Exception $e) {
+    error_log("Jobs API Error: " . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['error' => $e->getMessage()]);
+    echo json_encode(['error' => 'An internal error occurred while processing the request.']);
 }

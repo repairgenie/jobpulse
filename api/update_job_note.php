@@ -62,6 +62,7 @@ try {
     echo json_encode(['success' => true, 'note' => $newNote]);
 
 } catch (Exception $e) {
+    error_log("Update Job Note Error: " . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    echo json_encode(['success' => false, 'error' => 'An error occurred while updating the job note.']);
 }
