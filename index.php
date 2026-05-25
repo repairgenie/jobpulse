@@ -266,7 +266,16 @@ $history = array_slice($history, 0, 5);
                             <button @click="currentView = 'resumes'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'resumes' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
                                 <i data-lucide="file-badge" class="mr-3 h-5 w-5 opacity-100"></i> Resumes
                             </button>
-</nav>
+                            <button @click="currentView = 'auto_fill'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'auto_fill' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                <i data-lucide="pen-tool" class="mr-3 h-5 w-5 opacity-100"></i> Auto-Fill
+                            </button>
+                            <button @click="currentView = 'analytics'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'analytics' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                <i data-lucide="bar-chart-2" class="mr-3 h-5 w-5 opacity-100"></i> Analytics
+                            </button>
+                            <button @click="currentView = 'linkedin_integration'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'linkedin_integration' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                <i data-lucide="link" class="mr-3 h-5 w-5 opacity-100"></i> LinkedIn Integration
+                            </button>
+                        </nav>
                     </div>
                     <div class="flex-shrink-0 flex border-t border-slate-700/50 p-4 bg-darkbg/30">
                         <div class="flex items-center">
@@ -657,20 +666,6 @@ $history = array_slice($history, 0, 5);
                     <p class="text-slate-400 text-sm md:text-base font-medium max-w-2xl">Search real-time listings aggregated by Adzuna, dynamically localized to your Zip Code.</p>
                 </div>
 
-                <!-- Feature Status Alert -->
-                <div class="mb-8 bg-amber-500/10 border border-amber-500/30 rounded-2xl p-6 flex items-start gap-4 shadow-xl">
-                    <div class="p-3 bg-amber-500/20 rounded-xl shrink-0">
-                        <i data-lucide="construction" class="w-6 h-6 text-amber-500"></i>
-                    </div>
-                    <div class="min-w-0">
-                        <h4 class="text-base font-bold text-amber-500 mb-1">Feature Under Construction</h4>
-                        <p class="text-sm text-slate-300 font-medium leading-relaxed">
-                            Please note that the <strong class="text-white">Find Openings</strong> search feature is currently <strong class="text-amber-500">not fully implemented</strong> and may not return accurate or real-time results. 
-                            We are working hard to integrate the Adzuna API for dynamic job matching.
-                        </p>
-                    </div>
-                </div>
-
                 <!-- Live Search Filter Bar -->
                 <div class="bg-card/80 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-4 sm:p-6 shadow-xl mb-8">
                     <div class="flex flex-col md:flex-row md:items-center gap-4">
@@ -1004,6 +999,64 @@ $history = array_slice($history, 0, 5);
     </div>
 </div>
 
+
+<!-- Placeholder Views -->
+<div x-show="currentView === 'auto_fill'" class="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-12" style="display:none;" x-cloak>
+    <div class="mb-10">
+        <h1 class="text-3xl md:text-5xl font-extrabold text-white mb-3 tracking-tight drop-shadow-md">Auto-Fill</h1>
+        <p class="text-slate-400 text-sm md:text-base font-medium max-w-2xl">Automatically fill out job applications across various platforms.</p>
+    </div>
+    <div class="mb-8 bg-amber-500/10 border border-amber-500/30 rounded-2xl p-6 flex items-start gap-4 shadow-xl">
+        <div class="p-3 bg-amber-500/20 rounded-xl shrink-0">
+            <i data-lucide="construction" class="w-6 h-6 text-amber-500"></i>
+        </div>
+        <div class="min-w-0">
+            <h4 class="text-base font-bold text-amber-500 mb-1">Feature Under Construction</h4>
+            <p class="text-sm text-slate-300 font-medium leading-relaxed">
+                Please note that the <strong class="text-white">Auto-Fill</strong> feature is currently <strong class="text-amber-500">not fully implemented</strong>.
+                We are working hard to integrate this functionality.
+            </p>
+        </div>
+    </div>
+</div>
+
+<div x-show="currentView === 'analytics'" class="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-12" style="display:none;" x-cloak>
+    <div class="mb-10">
+        <h1 class="text-3xl md:text-5xl font-extrabold text-white mb-3 tracking-tight drop-shadow-md">Analytics</h1>
+        <p class="text-slate-400 text-sm md:text-base font-medium max-w-2xl">Gain deep insights into your job hunt performance.</p>
+    </div>
+    <div class="mb-8 bg-amber-500/10 border border-amber-500/30 rounded-2xl p-6 flex items-start gap-4 shadow-xl">
+        <div class="p-3 bg-amber-500/20 rounded-xl shrink-0">
+            <i data-lucide="construction" class="w-6 h-6 text-amber-500"></i>
+        </div>
+        <div class="min-w-0">
+            <h4 class="text-base font-bold text-amber-500 mb-1">Feature Under Construction</h4>
+            <p class="text-sm text-slate-300 font-medium leading-relaxed">
+                Please note that the <strong class="text-white">Analytics</strong> dashboard is currently <strong class="text-amber-500">not fully implemented</strong>.
+                We are working hard to integrate advanced tracking and insights.
+            </p>
+        </div>
+    </div>
+</div>
+
+<div x-show="currentView === 'linkedin_integration'" class="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-12" style="display:none;" x-cloak>
+    <div class="mb-10">
+        <h1 class="text-3xl md:text-5xl font-extrabold text-white mb-3 tracking-tight drop-shadow-md">LinkedIn Integration</h1>
+        <p class="text-slate-400 text-sm md:text-base font-medium max-w-2xl">Sync your profile and network with LinkedIn.</p>
+    </div>
+    <div class="mb-8 bg-amber-500/10 border border-amber-500/30 rounded-2xl p-6 flex items-start gap-4 shadow-xl">
+        <div class="p-3 bg-amber-500/20 rounded-xl shrink-0">
+            <i data-lucide="construction" class="w-6 h-6 text-amber-500"></i>
+        </div>
+        <div class="min-w-0">
+            <h4 class="text-base font-bold text-amber-500 mb-1">Feature Under Construction</h4>
+            <p class="text-sm text-slate-300 font-medium leading-relaxed">
+                Please note that the <strong class="text-white">LinkedIn Integration</strong> is currently <strong class="text-amber-500">not fully implemented</strong>.
+                We are working hard to provide seamless API connections to LinkedIn.
+            </p>
+        </div>
+    </div>
+</div>
 
 <!-- Resumes View -->
 <div x-show="currentView === 'resumes'" x-transition.opacity.duration.300ms x-cloak class="relative z-10">
