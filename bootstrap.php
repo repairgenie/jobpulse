@@ -8,34 +8,52 @@ if (!file_exists($configFile)) {
 
 $config = require $configFile;
 
-$errors = [];
-$requiredKeys = ['GEMINI_API_KEY'];
+// ── LLM Provider ─────────────────────────────────────────────────────────
+$llmProvider     = $config['LLM_PROVIDER'] ?? 'gemini';
+$llmApiKey       = $config['LLM_API_KEY'] ?? '';
+$llmBaseUrl      = $config['LLM_BASE_URL'] ?? '';
+$llmModel        = $config['LLM_MODEL'] ?? '';
 
-foreach ($requiredKeys as $key) {
-    if (!isset($config[$key]) || $config[$key] === 'PLACEHOLDER' || empty(trim($config[$key]))) {
-        $errors[] = $key;
-    }
+// Legacy Gemini API key (backward compat: if LLM_API_KEY was not set/prefer older key name)
+if (empty($llmApiKey) && !empty($config['GEMINI_API_KEY']) && $config['GEMINI_API_KEY'] !== 'PLACEHOLDER') {
+    $llmApiKey = $config['GEMINI_API_KEY'];
 }
 
-if (!empty($errors)) {
-    displayError($errors);
-}
+if (!defined('LLM_PROVIDER')) define('LLM_PROVIDER', $llmProvider);
+if (!defined('LLM_API_KEY'))  define('LLM_API_KEY',  $llmApiKey);
+if (!defined('LLM_BASE_URL')) define('LLM_BASE_URL', $llmBaseUrl);
+if (!defined('LLM_MODEL'))    define('LLM_MODEL',    $llmModel);
 
-// Map associative array to constants for backward compatibility with the rest of the application
-if (!defined('GEMINI_API_KEY')) define('GEMINI_API_KEY', $config['GEMINI_API_KEY']);
-if (!defined('GEMINI_MODEL')) define('GEMINI_MODEL', 'gemini-3.1-flash-lite-preview');
-if (!defined('ADZUNA_APP_ID')) define('ADZUNA_APP_ID', $config['ADZUNA_APP_ID']);
-if (!defined('ADZUNA_APP_KEY')) define('ADZUNA_APP_KEY', $config['ADZUNA_APP_KEY']);
+// ── Legacy Gemini constants (used by older API files until refactored) ──
+if (!defined('GEMINI_API_KEY')) define('GEMINI_API_KEY', $llmApiKey);
+if (!defined('GEMINI_MODEL'))   define('GEMINI_MODEL',  $config['GEMINI_MODEL'] ?? 'gemini-3.1-flash-lite-preview');
+
+// ── Job Scraping ────────────────────────────────────────────────────────
+if (!defined('ADZUNA_APP_ID'))  define('ADZUNA_APP_ID',  $config['ADZUNA_APP_ID'] ?? '');
+if (!defined('ADZUNA_APP_KEY')) define('ADZUNA_APP_KEY', $config['ADZUNA_APP_KEY'] ?? '');
+if (!defined('PROXY_URL'))      define('PROXY_URL',      $config['PROXY_URL'] ?? '');
 if (!defined('REGISTRATION_MODE')) define('REGISTRATION_MODE', $config['REGISTRATION_MODE'] ?? 'admin_approval');
-if (!defined('REQUIRE_EMAIL_CONFIRMATION')) define('REQUIRE_EMAIL_CONFIRMATION', false);
 
-// Directory Constants
-if (!defined('DATA_DIR')) define('DATA_DIR', __DIR__ . '/data');
-if (!defined('USERS_FILE')) define('USERS_FILE', DATA_DIR . '/users.json');
+// ── Directory Constants ──────────────────────────────────────────────────
+if (!defined('DATA_DIR'))     define('DATA_DIR',     __DIR__ . '/data');
+if (!defined('USERS_FILE'))  define('USERS_FILE',   DATA_DIR . '/users.json');
 if (!defined('HISTORY_FILE')) define('HISTORY_FILE', DATA_DIR . '/history.json');
 if (!defined('UPLOADS_DIR')) define('UPLOADS_DIR', __DIR__ . '/uploads');
+if (!defined('LLM_LOG_FILE')) define('LLM_LOG_FILE', DATA_DIR . '/llm_requests.json.log');
 
-function displayError(array $missingKeys) {
+// ── Config validation (only required fields) ────────────────────────────
+$errors = [];
+// Warn but don't block if no LLM is configured (user may want to use Ollama with no key)
+$llmConfigured = (
+    LLM_PROVIDER === 'ollama'
+    || LLM_PROVIDER === 'lmstudio'
+    || (LLM_API_KEY !== '' && LLM_API_KEY !== 'PLACEHOLDER' && LLM_API_KEY !== 'your_gemini_api_key_here')
+);
+if (!$llmConfigured) {
+    $errors[] = 'LLM_PROVIDER / LLM_API_KEY';
+}
+
+function displayError(array $missingKeys): void {
     ?>
     <!DOCTYPE html>
     <html lang="en" class="dark">
@@ -49,9 +67,9 @@ function displayError(array $missingKeys) {
                 darkMode: 'class',
                 theme: {
                     extend: {
-                        colors: { 
-                            darkbg: '#0f172a',    
-                            card: '#1e293b'   
+                        colors: {
+                            darkbg: '#0f172a',
+                            card: '#1e293b'
                         }
                     }
                 }
@@ -65,7 +83,6 @@ function displayError(array $missingKeys) {
             </div>
             <h2 class="text-2xl font-extrabold text-white text-center mb-2">Configuration Required</h2>
             <p class="text-sm text-slate-400 text-center mb-6">Your application is missing critical API keys.</p>
-            
             <div class="bg-darkbg border border-red-500/30 rounded-xl p-4 mb-6">
                 <p class="text-xs font-bold text-red-400 uppercase tracking-widest mb-3">Missing or Placeholder Values:</p>
                 <ul class="space-y-2">
@@ -77,11 +94,14 @@ function displayError(array $missingKeys) {
                     <?php endforeach; ?>
                 </ul>
             </div>
-            
             <p class="text-xs text-slate-500 text-center">Please update your <code class="text-slate-300 bg-slate-800 px-1 rounded">config.php</code> file in the root directory and refresh the page.</p>
         </div>
     </body>
     </html>
     <?php
     exit;
-} ?>
+}
+
+if (!empty($errors)) {
+    displayError($errors);
+}

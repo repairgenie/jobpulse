@@ -3,6 +3,9 @@ ob_start();
 session_start();
 
 require_once __DIR__ . '/../bootstrap.php';
+require_once __DIR__ . '/../src/LLMProvider.php';
+
+use App\LLMProvider;
 
 header('Content-Type: application/json');
 
@@ -89,32 +92,18 @@ if (GEMINI_API_KEY === 'your_gemini_api_key_here' || empty(GEMINI_API_KEY)) {
 }
 
 try {
-    $payload = json_encode([
-        'system_instruction' => ['parts' => [['text' => $systemPrompt]]],
-        'contents'           => $contents,
-        'generationConfig'   => [
-            'temperature' => 0.6, 
-            'maxOutputTokens' => 2048
-        ]
-    ]);
+    // Build messages array for multi-provider chat
+    $messages = [];
+    foreach ($history as $turn) {
+        if (empty(trim($turn['parts'][0]['text']))) continue;
+        $role = ($turn['role'] === 'user') ? 'user' : 'assistant';
+        $messages[] = ['role' => $role, 'content' => $turn['parts'][0]['text']];
+    }
+    $messages[] = ['role' => 'user', 'content' => $prompt];
 
-    $ch = curl_init("https://generativelanguage.googleapis.com/v1beta/models/" . GEMINI_MODEL . ":generateContent?key=" . GEMINI_API_KEY);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    $llm = new LLMProvider();
+    $rawResponse = $llm->chat($systemPrompt, $messages, 'json', 0.6);
 
-    $result   = curl_exec($ch);
-    if (curl_errno($ch)) throw new Exception("cURL Error: " . curl_error($ch));
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-
-    if ($httpCode !== 200) throw new Exception("Gemini API error (HTTP $httpCode): $result");
-
-    $decoded = json_decode($result, true);
-    $rawResponse   = $decoded['candidates'][0]['content']['parts'][0]['text'] ?? null;
-    if (empty($rawResponse)) throw new Exception("Empty response from Gemini.");
-    
     // Strip codeblock syntax if the AI mistakenly wraps it
     $cleanJson = preg_replace('/```json\s*/i', '', $rawResponse);
     $cleanJson = preg_replace('/```\s*/', '', $cleanJson);
@@ -125,15 +114,14 @@ try {
 
     if (json_last_error() === JSON_ERROR_NONE && isset($parsed['reply'])) {
         echo json_encode([
-            'success' => true, 
+            'success' => true,
             'reply' => $parsed['reply'],
             'new_text' => $parsed['new_text'] ?? null
         ]);
     } else {
-        // Fallback if parsing fails
         echo json_encode([
             'success' => true,
-            'reply' => "I had trouble formatting my response. Here is what I wanted to say:\n\n" . $rawResponse, 
+            'reply' => "I had trouble formatting my response. Here is what I wanted to say:\n\n" . $rawResponse,
             'new_text' => null
         ]);
     }

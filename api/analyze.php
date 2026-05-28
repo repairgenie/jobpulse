@@ -2,8 +2,10 @@
 session_start();
 
 require_once __DIR__ . '/../bootstrap.php';
+require_once __DIR__ . '/../src/LLMProvider.php';
 require_once __DIR__ . '/../src/ResumeManager.php';
 
+use App\LLMProvider;
 use App\ResumeManager;
 
 header('Content-Type: application/json');
@@ -82,7 +84,7 @@ Provide the following in your analysis:
 1. A 'match_score' (integer between 0 and 100).
 2. A 'missing_keywords' array (list of important keywords from the JD missing in the resume).
 3. A short 'strategy' (a paragraph summarizing interview strategy or resume tailoring advice).
-4. A 'cover_letter' (a professional, compelling cover letter written from the candidate's perspective based on the fit).
+4. A 'cover_letter' (a single string containing exactly 3 paragraphs separated by blank lines. Paragraph 1: Hook - specific role + company, 1 standout achievement with metrics. Paragraph 2: 2-3 accomplishments matching key job requirements, each with a metric. Paragraph 3: Closing enthusiasm + call to action. Be specific to this candidate and job - no generic filler.)
 
 Return ONLY a valid JSON object matching this structure exactly:
 {
@@ -92,66 +94,80 @@ Return ONLY a valid JSON object matching this structure exactly:
   \"cover_letter\": \"Dear Hiring Manager,...\"
 }";
 
-$prompt = "Job Description:\n" . $jobDescription . "\n\nCandidate Resume:\n" . $resumeText;
-
+// Wrap all LLM logic in try/catch so exceptions are handled properly
 try {
+    $llm = new LLMProvider();
+
+    // For LM Studio / Ollama with large prompts (resume + job description),
+    // we must chunk to fit within the model's context window (4096 tokens).
+    // Each chunk: resume section + job description, leaving 1024 tokens for response.
+    $maxContext = 3072; // conservative for 4096 context window
+    $jobLen = strlen($jobDescription);
+    $resumeLen = strlen($resumeText);
+    $combined = $jobLen + $resumeLen;
+
+    // Rough token estimate: 1 char ≈ 0.25 tokens
+    $combinedTokens = (int)(($combined) / 4);
+
+    if ($combinedTokens <= $maxContext) {
+        // Fits in one chunk
+        $prompt = "Job Description:\n" . $jobDescription . "\n\nCandidate Resume:\n" . $resumeText;
+        $chunks = [['prompt' => $prompt, 'section' => 'full']];
+    } else {
+        // Chunk the resume by sections, keep job description with each chunk
+        $sections = preg_split('/\n(?=(?:PROFESSIONAL EXPERIENCE|TECHNICAL SKILLS|EDUCATION|PROJECT|PROFILE)/i', $resumeText);
+        $chunks = [];
+        $currentChunk = '';
+        $currentTokens = (int)($jobLen / 4); // job desc tokens
+
+        foreach ($sections as $section) {
+            $sectionTokens = (int)(strlen($section) / 4);
+            if ($currentTokens + $sectionTokens > $maxContext && $currentChunk !== '') {
+                $chunks[] = ['prompt' => "Job Description:\n" . $jobDescription . "\n\nCandidate Resume Section:\n" . $currentChunk, 'section' => count($chunks) + 1];
+                $currentChunk = $section;
+                $currentTokens = $sectionTokens + (int)($jobLen / 4);
+            } else {
+                $currentChunk .= "\n" . $section;
+                $currentTokens += $sectionTokens;
+            }
+        }
+        if ($currentChunk) {
+            $chunks[] = ['prompt' => "Job Description:\n" . $jobDescription . "\n\nCandidate Resume Section:\n" . $currentChunk, 'section' => count($chunks) + 1];
+        }
+    }
+
+    $aiResponse = null;
+
     if (GEMINI_API_KEY === 'your_gemini_api_key_here' || empty(GEMINI_API_KEY)) {
-        // Mock Response
-        sleep(2);
+        // No Gemini key → use LM Studio via chunked request (actual LLM call)
+        $allResponses = [];
+        foreach ($chunks as $chunk) {
+            $response = $llm->request($systemInstruction, $chunk['prompt'], 0.7);
+            $allResponses[] = $response;
+        }
+        $matchScores = array_column($allResponses, 'match_score');
+        $allKeywords = [];
+        foreach ($allResponses as $r) {
+            if (!empty($r['missing_keywords'])) {
+                $allKeywords = array_merge($allKeywords, $r['missing_keywords']);
+            }
+        }
+        $allKeywords = array_unique($allKeywords);
+        $strategies = array_filter(array_column($allResponses, 'strategy'));
+        $coverLetters = array_filter(array_column($allResponses, 'cover_letter'));
         $aiResponse = [
-            'match_score' => rand(70, 95),
-            'missing_keywords' => ['Cloudflare', 'GraphQL'],
-            'strategy' => 'Focus heavily on your communication skills and past leadership roles, as they value autonomy.',
-            'cover_letter' => "Dear Hiring Manager,\n\nI am thrilled to apply for this role. My background aligns perfectly with your requirements...\n\nBest regards,\nCandidate"
+            'match_score' => $matchScores ? (int)array_sum($matchScores) / count($matchScores) : 75,
+            'missing_keywords' => array_slice($allKeywords, 0, 15),
+            'strategy' => implode(' ', $strategies) ?: 'Review the missing keywords and tailor your resume accordingly.',
+            'cover_letter' => implode("\n---\n", $coverLetters)
         ];
     } else {
-        $ch = curl_init("https://generativelanguage.googleapis.com/v1beta/models/" . GEMINI_MODEL . ":generateContent?key=" . GEMINI_API_KEY);
-        
-        $postData = json_encode([
-            "system_instruction" => [
-                "parts" => [
-                    ["text" => $systemInstruction]
-                ]
-            ],
-            "contents" => [
-                [
-                    "role" => "user",
-                    "parts" => [
-                        ["text" => $prompt]
-                    ]
-                ]
-            ],
-            "generationConfig" => [
-                "temperature" => 0.7,
-                "responseMimeType" => "application/json"
-            ]
-        ]);
+        // Gemini available — single-pass request (Gemini handles context internally)
+        $aiResponse = $llm->request($systemInstruction, $prompt, 0.7);
+    }
 
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json'
-        ]);
-
-        $result = curl_exec($ch);
-        
-        if (curl_errno($ch)) throw new Exception("cURL Error: " . curl_error($ch));
-        
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-        
-        if ($httpCode >= 400) throw new Exception("Gemini API Error (HTTP " . $httpCode . "): " . $result);
-
-        $decoded = json_decode($result, true);
-        
-        if (isset($decoded['candidates'][0]['content']['parts'][0]['text'])) {
-            $jsonText = $decoded['candidates'][0]['content']['parts'][0]['text'];
-            $aiResponse = json_decode($jsonText, true);
-            if (!$aiResponse) throw new Exception("Failed to parse Gemini JSON output. Raw: " . $jsonText);
-        } else {
-            throw new Exception("Unexpected response format from Gemini.");
-        }
+    if ($aiResponse === null) {
+        throw new Exception('Analysis failed: no response from LLM.');
     }
 
     // Save history

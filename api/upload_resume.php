@@ -4,9 +4,13 @@ session_start();
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/../src/ResumeManager.php';
 require_once __DIR__ . '/../src/PdfParser.php';
+require_once __DIR__ . '/../src/PdfToMarkdown.php';
+require_once __DIR__ . '/../src/LLMProvider.php';
 
 use App\ResumeManager;
 use App\PdfParserWrapper;
+use App\PdfToMarkdown;
+use App\LLMProvider;
 
 header('Content-Type: application/json');
 
@@ -31,7 +35,12 @@ try {
     $category = $_POST['category'] ?? 'General';
     $category = preg_replace('/[^a-zA-Z0-9\s]/', '', $category); // Sanitize
     if (empty(trim($category))) $category = 'General';
-    
+
+    // ── Model selection (POST) ────────────────────────────────────────────────
+    $modelOverride  = isset($_POST['model']) ? trim($_POST['model']) : '';
+    $baseUrlOverride = isset($_POST['baseUrl']) ? trim($_POST['baseUrl']) : '';
+    $baseUrl        = $baseUrlOverride ?: (defined('LLM_BASE_URL') ? LLM_BASE_URL : '');
+
     // Security check: Only allow PDFs
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $mimeType = finfo_file($finfo, $file['tmp_name']);
@@ -56,9 +65,23 @@ try {
         throw new Exception("Failed to save the uploaded file.");
     }
 
-    // Extract text
-    $pdfParser = new PdfParserWrapper();
-    $resumeText = $pdfParser->extractText($targetPath);
+    // ── Extract text — choose method based on model vision capability ──────────
+    $useVision = false;
+    $extractionMethod = 'text';
+
+    if (!empty($modelOverride)) {
+        $useVision = LLMProvider::supportsVision($modelOverride, $baseUrl);
+        $extractionMethod = $useVision ? 'vision' : 'text';
+    }
+
+    if ($useVision) {
+        // Vision-based extraction: PDF → images → vision LLM → Markdown
+        $resumeText = PdfToMarkdown::convert($targetPath, $modelOverride);
+    } else {
+        // Traditional text extraction via PdfParserWrapper
+        $pdfParser = new PdfParserWrapper();
+        $resumeText = $pdfParser->extractText($targetPath);
+    }
 
     if (empty(trim($resumeText))) {
         throw new Exception("The uploaded PDF appears to be empty or unreadable.");
@@ -74,13 +97,14 @@ try {
     }
 
     echo json_encode([
-        'success' => true, 
-        'message' => 'Resume uploaded and parsed successfully!',
-        'resume' => $savedData
+        'success'          => true,
+        'message'          => 'Resume uploaded and parsed successfully!',
+        'resume'           => $savedData,
+        'extraction'       => $extractionMethod,  // 'vision' or 'text'
+        'modelUsed'        => $modelOverride ?: null,
     ]);
 
 } catch (Exception $e) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);
 }
-

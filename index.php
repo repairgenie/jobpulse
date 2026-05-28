@@ -266,6 +266,9 @@ $history = array_slice($history, 0, 5);
                             <button @click="currentView = 'resumes'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'resumes' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
                                 <i data-lucide="file-badge" class="mr-3 h-5 w-5 opacity-100"></i> Resumes
                             </button>
+                            <button @click="currentView = 'settings'; $nextTick(() => lucide.createIcons())" :class="currentView === 'settings' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                <i data-lucide="settings" class="mr-3 h-5 w-5 opacity-100"></i> Settings
+                            </button>
 </nav>
                     </div>
                     <div class="flex-shrink-0 flex border-t border-slate-700/50 p-4 bg-darkbg/30">
@@ -1061,6 +1064,86 @@ $history = array_slice($history, 0, 5);
     </div>
 </div>
 
+<!-- Settings View -->
+<div x-show="currentView === 'settings'" x-transition.opacity.duration.300ms x-cloak class="relative z-10" x-init="$nextTick(() => lucide.createIcons())">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-12">
+        <div class="mb-8">
+            <h1 class="text-3xl font-extrabold text-white tracking-tight">Settings</h1>
+            <p class="text-slate-400 mt-2 text-sm">Configure your LLM provider and API keys.</p>
+        </div>
+
+        <div class="glass rounded-2xl border border-slate-700/50 p-8">
+            <h2 class="text-lg font-bold text-white mb-6">LLM Provider</h2>
+
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-sm font-bold text-slate-300 mb-2">Provider</label>
+                    <select x-model="settingsForm.provider"
+                        class="w-full bg-slate-800 border border-slate-600 text-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-primary">
+                        <option value="gemini">Gemini (Google)</option>
+                        <option value="lmstudio">LM Studio (Local)</option>
+                        <option value="ollama">Ollama (Local)</option>
+                        <option value="openai">OpenAI</option>
+                        <option value="openai-oauth">OpenAI OAuth</option>
+                        <option value="minimax">MiniMax</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-slate-300 mb-2">Base URL</label>
+                    <div class="flex gap-2">
+                        <input type="text" x-model="settingsForm.baseUrl" placeholder="http://192.168.8.147:1234"
+                            class="flex-1 w-full bg-slate-800 border border-slate-600 text-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-primary placeholder-slate-500">
+                        <button type="button" @click="refreshModels()"
+                            class="px-4 py-3 bg-primary hover:bg-violet-400 text-white rounded-xl text-sm font-bold whitespace-nowrap"
+                            title="Poll LM Studio for available models">
+                            Find Models
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-slate-300 mb-2">API Key</label>
+                    <input type="password" x-model="settingsForm.apiKey" placeholder="Leave blank for LM Studio / Ollama"
+                        class="w-full bg-slate-800 border border-slate-600 text-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-primary placeholder-slate-500">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-slate-300 mb-2">Model</label>
+                    <select x-model="settingsForm.model"
+                        class="w-full bg-slate-800 border border-slate-600 text-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-primary">
+                        <option value="">— Select a model —</option>
+                        <template x-for="m in availableModels" :key="m.id">
+                            <option :value="m.id" x-text="m.name + (m.vision ? ' 🖼' : '')"></option>
+                        </template>
+                    </select>
+                    <p x-show="availableModels.length === 0 && settingsForm.provider === 'lmstudio'" class="mt-1 text-xs text-amber-400">
+                        No models found — is LM Studio running at the base URL?
+                    </p>
+                </div>
+
+                <div class="pt-2">
+                    <button @click="saveSettings()"
+                        class="inline-flex items-center px-6 py-3 bg-primary hover:bg-violet-400 text-white text-sm font-bold rounded-xl shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all active:scale-95">
+                        Save Settings
+                    </button>
+                    <span x-show="settingsSaved" class="ml-4 text-green-400 text-sm font-bold" x-text="settingsSaved"></span>
+                </div>
+            </div>
+
+            <div class="mt-10 pt-8 border-t border-slate-700/50">
+                <h2 class="text-lg font-bold text-white mb-4">Current Config</h2>
+                <div class="bg-darkbg rounded-xl p-4 font-mono text-xs text-slate-400 space-y-1">
+                    <div>Provider: <span class="text-white" x-text="settingsForm.provider"></span></div>
+                    <div>Base URL: <span class="text-white" x-text="settingsForm.baseUrl || '(default)'"></span></div>
+                    <div>API Key: <span class="text-white" x-text="settingsForm.apiKey ? '••••••••' : '(none)'"></span></div>
+                    <div>Model: <span class="text-white" x-text="settingsForm.model || '(default)'"></span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- ═══════════════════════════════ GLOBAL MODALS (Accessible from all views) ═══════════════════════════════ -->
 
@@ -1443,6 +1526,9 @@ $history = array_slice($history, 0, 5);
             return {
                 currentView: localStorage.getItem('jobpulse_last_view') || 'vibe_check',
                 candidateName: '',
+
+                init() {
+                },
 
                 // Client-side markdown renderer
                 renderMarkdown(text) {
@@ -2527,6 +2613,8 @@ async fetchHistory() {
                     const fd = new FormData();
                     fd.append('resume', file);
                     fd.append('category', this.newCategory || 'General');
+                    fd.append('model', this.settingsForm.model);
+                    fd.append('baseUrl', this.settingsForm.baseUrl);
                     
                     try {
                         const res = await fetch('api/upload_resume.php', { method: 'POST', body: fd });
@@ -2535,6 +2623,7 @@ async fetchHistory() {
                             this.showUploadModal = false;
                             this.newCategory = '';
                             fileInput.value = '';
+                            this.lastUploadMethod = data.extraction === 'vision' ? 'Vision ✨' : 'Text';
                             await this.fetchResumes();
                         } else {
                             this.uploadError = data.message || "Failed to parse PDF.";
@@ -2855,12 +2944,57 @@ async fetchHistory() {
                 async logout() {
                     await fetch('api/auth.php?action=logout', { method: 'POST' });
                     window.location.reload();
+                },
+
+                settingsForm: {
+                    provider: '<?php echo addslashes(LLM_PROVIDER); ?>',
+                    baseUrl: '<?php echo addslashes(LLM_BASE_URL); ?>',
+                    apiKey: '',
+                    model: '<?php echo addslashes(LLM_MODEL); ?>'
+                },
+                settingsSaved: '',
+                availableModels: [],
+                modelRefreshError: '',
+                lastUploadMethod: '',
+
+                async refreshModels() {
+                    const p = this.settingsForm.provider;
+                    if (p !== 'lmstudio' && p !== 'ollama') {
+                        this.availableModels = [];
+                        return;
+                    }
+                    const baseUrl = this.settingsForm.baseUrl || '<?php echo addslashes(LLM_BASE_URL); ?>';
+                    try {
+                        const res = await fetch(`api/list_models.php?provider=${p}&baseUrl=${encodeURIComponent(baseUrl)}`);
+                        const models = await res.json();
+                        this.availableModels = Array.isArray(models) ? models : [];
+                    } catch(e) {
+                        this.availableModels = [];
+                    }
+                },
+
+                async saveSettings() {
+                    try {
+                        const fd = new FormData();
+                        fd.append('provider', this.settingsForm.provider);
+                        fd.append('baseUrl', this.settingsForm.baseUrl);
+                        fd.append('apiKey', this.settingsForm.apiKey);
+                        fd.append('model', this.settingsForm.model);
+                        const res = await fetch('api/update_settings.php', { method: 'POST', body: fd });
+                        const data = await res.json();
+                        if (data.success) {
+                            this.settingsSaved = 'Saved! Reload to apply.';
+                            setTimeout(() => { this.settingsSaved = ''; }, 3000);
+                        } else {
+                            this.settingsSaved = 'Failed: ' + (data.error || 'unknown');
+                        }
+                    } catch(e) {
+                        this.settingsSaved = 'Error: ' + e.message;
+                    }
                 }
             }
         }
     </script>
     <?php endif; ?>
-
-    <script>document.addEventListener("DOMContentLoaded", () => { if (window.lucide) window.lucide.createIcons(); });</script>
 </body>
 </html>

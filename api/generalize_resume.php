@@ -2,8 +2,10 @@
 ob_start();
 session_start();
 require_once __DIR__ . '/../bootstrap.php';
+require_once __DIR__ . '/../src/LLMProvider.php';
 require_once __DIR__ . '/../src/ResumeManager.php';
 
+use App\LLMProvider;
 use App\ResumeManager;
 
 header('Content-Type: application/json');
@@ -56,27 +58,10 @@ try {
     if (GEMINI_API_KEY === 'your_gemini_api_key_here' || empty(GEMINI_API_KEY)) {
         $generalizedText = "# Generalized Resume\n\n* This is a mock generalized resume.\n* It is optimized for the requested direction.\n";
     } else {
-        $ch = curl_init("https://generativelanguage.googleapis.com/v1beta/models/" . GEMINI_MODEL . ":generateContent?key=" . GEMINI_API_KEY);
-        $postData = json_encode([
-            "system_instruction" => ["parts" => [["text" => $systemInstruction]]],
-            "contents"           => [["role" => "user", "parts" => [["text" => $prompt]]]],
-            "generationConfig"   => ["temperature" => 0.3]
-        ]);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-
-        $result   = curl_exec($ch);
-        if (curl_errno($ch)) throw new Exception("cURL Error: " . curl_error($ch));
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        if ($httpCode !== 200) throw new Exception("Gemini API error (HTTP $httpCode).");
-
-        $decoded = json_decode($result, true);
-        $generalizedText = $decoded['candidates'][0]['content']['parts'][0]['text'] ?? null;
-        if (empty($generalizedText)) throw new Exception("Gemini returned an empty response.");
+        $llm = new LLMProvider();
+        $aiResponse = $llm->request($systemInstruction, $prompt, 0.3);
+        $generalizedText = $aiResponse['generalized_resume_text'] ?? $aiResponse['resume_text'] ?? '';
+        if (empty($generalizedText)) throw new Exception("LLM returned an empty response.");
     }
 
     // Save as a new resume entry using the existing ResumeManager

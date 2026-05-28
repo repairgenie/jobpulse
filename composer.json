@@ -1,6 +1,7 @@
 {
     "require": {
         "smalot/pdfparser": "^2.12",
-        "mpdf/mpdf": "^8.3"
+        "mpdf/mpdf": "^8.3",
+        "erusev/parsedown": "^1.8"
     }
 }

@@ -1,16 +1,46 @@
 <?php
+/**
+ * JobPulse Configuration Template
+ * Copy this file to config.php and fill in your values.
+ *
+ * LLM Provider setup:
+ *   - LLStudio (local):       Set LLM_PROVIDER='lmstudio', LLM_BASE_URL (default: http://192.168.8.147:1234), LLM_MODEL to your loaded model.
+ *   - Ollama (local):        Set LLM_PROVIDER='ollama', LLM_BASE_URL to your Ollama URL (e.g. http://localhost:11434).
+ *   - OpenAI:                Set LLM_PROVIDER='openai', LLM_API_KEY to your OpenAI API key.
+ *   - OpenAI OAuth:          Set LLM_PROVIDER='openai-oauth', LLM_API_KEY to your OpenAI OAuth token.
+ *   - MiniMax:               Set LLM_PROVIDER='minimax', LLM_API_KEY to your MiniMax API key.
+ *   - Gemini (default):      Set LLM_PROVIDER='gemini', LLM_API_KEY to your Gemini API key.
+ *
+ * For Ollama and LM Studio, no API key is needed.
+ */
 return [
+    // ── LLM Provider ─────────────────────────────────────────────────────
+    'LLM_PROVIDER' => 'gemini',   // 'gemini' | 'lmstudio' | 'ollama' | 'openai' | 'openai-oauth' | 'minimax'
+    'LLM_API_KEY'  => 'PLACEHOLDER',
+    'LLM_BASE_URL' => 'http://192.168.8.147:1234',  // LM Studio default; also used for Ollama
+    'LLM_MODEL'    => '',         // Provider-specific model name (see docs). Leave empty for defaults.
+
+    // ── Google Gemini (default) ──────────────────────────────────────────
+    // Only used when LLM_PROVIDER = 'gemini'
+    // 'GEMINI_API_KEY' is a legacy alias for LLM_API_KEY — used if LLM_API_KEY is PLACEHOLDER
     'GEMINI_API_KEY' => 'PLACEHOLDER',
+    'GEMINI_MODEL'  => 'gemini-3.1-flash-lite-preview',
+
+    // ── Job Scraping ────────────────────────────────────────────────────
     'ADZUNA_APP_ID' => 'PLACEHOLDER',
     'ADZUNA_APP_KEY' => 'PLACEHOLDER',
-    'PROXY_URL' => '', // Optional proxy URL for scraping (e.g. http://proxy.example.com:8080)
+    'PROXY_URL'     => '', // Optional proxy URL for scraping (e.g. http://proxy.example.com:8080)
+
+    // ── Application ─────────────────────────────────────────────────────
     'DB_PATH' => __DIR__ . '/data/jobpulse.sqlite',
     'REGISTRATION_MODE' => 'admin_approval',
+
+    // ── Email / SMTP ────────────────────────────────────────────────────
     'SMTP' => [
-        'host' => 'PLACEHOLDER',
-        'port' => 587,
-        'user' => 'PLACEHOLDER',
-        'pass' => 'PLACEHOLDER',
+        'host'   => 'PLACEHOLDER',
+        'port'   => 587,
+        'user'   => 'PLACEHOLDER',
+        'pass'   => 'PLACEHOLDER',
         'secure' => 'tls'
     ]
 ];

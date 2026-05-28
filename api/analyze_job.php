@@ -2,10 +2,11 @@
 ob_start();
 session_start();
 require_once __DIR__ . '/../bootstrap.php';
+require_once __DIR__ . '/../src/LLMProvider.php';
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
 
-header('Content-Type: application/json');
+use App\LLMProvider;
 
 set_error_handler(function($errno, $errstr, $errfile, $errline) {
     if (!(error_reporting() & $errno)) return false;
@@ -14,6 +15,7 @@ set_error_handler(function($errno, $errstr, $errfile, $errline) {
     echo json_encode(['success' => false, 'error' => "PHP Error [$errno]: $errstr in $errfile on line $errline"]);
     exit;
 });
+header('Content-Type: application/json');
 
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
@@ -129,49 +131,9 @@ try {
     if (!function_exists('curl_init')) {
         throw new Exception("cURL extension is not enabled on this server. Please enable it in your php.ini.");
     }
-    
-    $ch = curl_init("https://generativelanguage.googleapis.com/v1beta/models/" . GEMINI_MODEL . ":generateContent?key=" . GEMINI_API_KEY);
-    $payload = json_encode([
-        'system_instruction' => ['parts' => [['text' => $systemInstruction]]],
-        'contents'           => [['role' => 'user', 'parts' => [['text' => $prompt]]]],
-        'generationConfig'   => ['temperature' => 0.4, 'maxOutputTokens' => 8192]
-    ]);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 120);
 
-    $result   = curl_exec($ch);
-    if (curl_errno($ch)) throw new Exception("cURL Error: " . curl_error($ch));
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-
-    if ($httpCode !== 200) throw new Exception("Gemini API error (HTTP $httpCode).");
-
-    $decoded  = json_decode($result, true);
-    $rawText  = $decoded['candidates'][0]['content']['parts'][0]['text'] ?? '';
-    if (empty($rawText)) throw new Exception("Empty response from Gemini.");
-
-    // Strip markdown code fences if present
-    $jsonText = preg_replace('/^```(?:json)?\s*/i', '', trim($rawText));
-    $jsonText = preg_replace('/\s*```$/', '', $jsonText);
-
-    // Extract first JSON object
-    $start = strpos($jsonText, '{');
-    if ($start !== false) {
-        $depth = 0; $end = false;
-        for ($i = $start; $i < strlen($jsonText); $i++) {
-            if ($jsonText[$i] === '{') $depth++;
-            if ($jsonText[$i] === '}') { $depth--; if ($depth === 0) { $end = $i; break; } }
-        }
-        if ($end !== false) $jsonText = substr($jsonText, $start, $end - $start + 1);
-    }
-
-    $analysis = json_decode($jsonText, true);
-    if (!$analysis || !isset($analysis['company_problems'])) {
-        throw new Exception("Failed to parse analysis JSON. Raw: " . substr($jsonText, 0, 300));
-    }
+    $llm = new LLMProvider();
+    $analysis = $llm->request($systemInstruction, $prompt, 0.4);
 
     ob_end_clean();
     echo json_encode([
