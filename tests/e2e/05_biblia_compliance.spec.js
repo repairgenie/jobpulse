@@ -10,7 +10,7 @@ test.describe('Biblia Compliance', () => {
   });
 
   test('main page uses Alpine.js (SPA pattern)', async ({ page }) => {
-    await page.goto('http://localhost:8000');
+    await page.goto('/');
     await page.waitForTimeout(2000);
     const html = await page.content();
     expect(html).toContain('alpine');
