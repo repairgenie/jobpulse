@@ -1,0 +1,166 @@
+[Sat Jun 13 07:28:37 2026] PHP 8.3.6 Development Server (http://localhost:8000) started
+[Sat Jun 13 07:29:20 2026] [::1]:33312 Accepted
+[Sat Jun 13 07:29:20 2026] [::1]:33312 [200]: GET /index.php
+[Sat Jun 13 07:29:20 2026] [::1]:33312 Closing
+[Sat Jun 13 07:29:23 2026] [::1]:33316 Accepted
+[Sat Jun 13 07:29:23 2026] [::1]:33316 [200]: POST /api/auth.php?action=login
+[Sat Jun 13 07:29:23 2026] [::1]:33316 Closing
+[Sat Jun 13 07:29:23 2026] [::1]:33328 Accepted
+[Sat Jun 13 07:29:23 2026] [::1]:33328 [200]: GET /index.php
+[Sat Jun 13 07:29:23 2026] [::1]:33328 Closing
+[Sat Jun 13 07:29:24 2026] [::1]:33342 Accepted
+[Sat Jun 13 07:29:24 2026] [::1]:33342 [200]: GET /api/resumes.php
+[Sat Jun 13 07:29:24 2026] [::1]:33342 Closing
+[Sat Jun 13 07:29:24 2026] [::1]:33356 Accepted
+[Sat Jun 13 07:29:24 2026] [::1]:33356 [500]: GET /api/search_jobs.php?q=&l=&remote=false&hybrid=false
+[Sat Jun 13 07:29:24 2026] [::1]:33356 Closing
+[Sat Jun 13 07:29:24 2026] [::1]:33362 Accepted
+[Sat Jun 13 07:29:24 2026] [::1]:33362 [200]: GET /api/resumes.php
+[Sat Jun 13 07:29:24 2026] [::1]:33362 Closing
+[Sat Jun 13 07:30:00 2026] [::1]:41822 Accepted
+[Sat Jun 13 07:30:00 2026] [::1]:41822 [200]: GET /index.php
+[Sat Jun 13 07:30:00 2026] [::1]:41822 Closing
+[Sat Jun 13 07:30:01 2026] [::1]:41828 Accepted
+[Sat Jun 13 07:30:01 2026] [::1]:41828 [200]: POST /api/auth.php?action=login
+[Sat Jun 13 07:30:01 2026] [::1]:41828 Closing
+[Sat Jun 13 07:30:01 2026] [::1]:41832 Accepted
+[Sat Jun 13 07:30:01 2026] [::1]:41832 [200]: GET /index.php
+[Sat Jun 13 07:30:01 2026] [::1]:41832 Closing
+[Sat Jun 13 07:30:02 2026] [::1]:41848 Accepted
+[Sat Jun 13 07:30:02 2026] [::1]:41860 Accepted
+[Sat Jun 13 07:30:02 2026] [::1]:41848 [200]: GET /api/resumes.php
+[Sat Jun 13 07:30:02 2026] [::1]:41848 Closing
+[Sat Jun 13 07:30:02 2026] [::1]:41860 [500]: GET /api/search_jobs.php?q=&l=&remote=false&hybrid=false
+[Sat Jun 13 07:30:02 2026] [::1]:41860 Closing
+[Sat Jun 13 07:30:02 2026] [::1]:41872 Accepted
+[Sat Jun 13 07:30:02 2026] [::1]:41872 [200]: GET /api/resumes.php
+[Sat Jun 13 07:30:02 2026] [::1]:41872 Closing
+[Sat Jun 13 07:30:06 2026] [::1]:57790 Accepted
+[Sat Jun 13 07:30:07 2026] [::1]:57790 [500]: GET /api/search_jobs.php?q=&l=&remote=false&hybrid=false
+[Sat Jun 13 07:30:07 2026] [::1]:57790 Closing
+[Sat Jun 13 07:31:15 2026] [::1]:39422 Accepted
+[Sat Jun 13 07:31:15 2026] [::1]:39422 [200]: GET /
+[Sat Jun 13 07:31:15 2026] [::1]:39422 Closing
+[Sat Jun 13 07:31:15 2026] [::1]:39438 Accepted
+[Sat Jun 13 07:31:15 2026] [::1]:39438 [200]: GET /
+[Sat Jun 13 07:31:15 2026] [::1]:39438 Closing
+[Sat Jun 13 07:31:18 2026] [::1]:33300 Accepted
+[Sat Jun 13 07:31:18 2026] [::1]:33300 [200]: GET /
+[Sat Jun 13 07:31:18 2026] [::1]:33300 Closing
+[Sat Jun 13 07:31:19 2026] [::1]:33312 Accepted
+[Sat Jun 13 07:31:19 2026] [::1]:33312 [200]: GET /
+[Sat Jun 13 07:31:19 2026] [::1]:33312 Closing
+[Sat Jun 13 07:31:21 2026] [::1]:33328 Accepted
+[Sat Jun 13 07:31:21 2026] [::1]:33328 [200]: GET /
+[Sat Jun 13 07:31:21 2026] [::1]:33328 Closing
+[Sat Jun 13 07:31:22 2026] [::1]:33336 Accepted
+[Sat Jun 13 07:31:22 2026] [::1]:33336 [200]: GET /
+[Sat Jun 13 07:31:22 2026] [::1]:33336 Closing
+[Sat Jun 13 07:31:23 2026] [::1]:33352 Accepted
+[Sat Jun 13 07:31:23 2026] [::1]:33352 [405]: GET /api/optimize_resume.php
+[Sat Jun 13 07:31:23 2026] [::1]:33352 Closing
+[Sat Jun 13 07:31:24 2026] [::1]:33368 Accepted
+[Sat Jun 13 07:31:24 2026] [::1]:33368 [401]: GET /api/generalize_resume.php
+[Sat Jun 13 07:31:24 2026] [::1]:33368 Closing
+[Sat Jun 13 07:31:24 2026] [::1]:33376 Accepted
+[Sat Jun 13 07:31:24 2026] [::1]:33376 [401]: GET /api/resumes.php
+[Sat Jun 13 07:31:24 2026] [::1]:33376 Closing
+[Sat Jun 13 07:31:24 2026] [::1]:33392 Accepted
+[Sat Jun 13 07:31:24 2026] [::1]:33392 [401]: GET /api/history.php
+[Sat Jun 13 07:31:24 2026] [::1]:33392 Closing
+[Sat Jun 13 07:31:24 2026] [::1]:33398 Accepted
+[Sat Jun 13 07:31:24 2026] [::1]:33398 [401]: GET /api/ask_ai.php
+[Sat Jun 13 07:31:24 2026] [::1]:33398 Closing
+[Sat Jun 13 07:31:24 2026] [::1]:33400 Accepted
+[Sat Jun 13 07:31:24 2026] [::1]:33400 [401]: GET /api/analyze_job.php
+[Sat Jun 13 07:31:24 2026] [::1]:33400 Closing
+[Sat Jun 13 07:31:24 2026] [::1]:33404 Accepted
+[Sat Jun 13 07:31:24 2026] [::1]:33404 [401]: POST /api/search_jobs.php
+[Sat Jun 13 07:31:24 2026] [::1]:33404 Closing
+[Sat Jun 13 07:31:24 2026] [::1]:33412 Accepted
+[Sat Jun 13 07:31:24 2026] [::1]:33412 [200]: GET /
+[Sat Jun 13 07:31:24 2026] [::1]:33412 Closing
+[Sat Jun 13 07:31:25 2026] [::1]:33418 Accepted
+[Sat Jun 13 07:31:25 2026] [::1]:33418 [200]: GET /
+[Sat Jun 13 07:31:25 2026] [::1]:33418 Closing
+[Sat Jun 13 07:31:25 2026] [::1]:33424 Accepted
+[Sat Jun 13 07:31:25 2026] [::1]:33424 [401]: POST /api/optimize_resume.php
+[Sat Jun 13 07:31:25 2026] [::1]:33424 Closing
+[Sat Jun 13 07:31:29 2026] [::1]:58058 Accepted
+[Sat Jun 13 07:31:29 2026] [::1]:58058 [200]: GET /
+[Sat Jun 13 07:31:29 2026] [::1]:58058 Closing
+[Sat Jun 13 07:31:33 2026] [::1]:58074 Accepted
+[Sat Jun 13 07:31:33 2026] [::1]:58074 [405]: GET /api/optimize_resume.php
+[Sat Jun 13 07:31:33 2026] [::1]:58074 Closing
+[Sat Jun 13 07:32:45 2026] [::1]:48240 Accepted
+[Sat Jun 13 07:32:45 2026] [::1]:48240 [200]: GET /
+[Sat Jun 13 07:32:45 2026] [::1]:48240 Closing
+[Sat Jun 13 07:32:45 2026] [::1]:48242 Accepted
+[Sat Jun 13 07:32:45 2026] [::1]:48242 [200]: GET /
+[Sat Jun 13 07:32:45 2026] [::1]:48242 Closing
+[Sat Jun 13 07:32:46 2026] [::1]:48800 Accepted
+[Sat Jun 13 07:32:46 2026] [::1]:48800 [200]: POST /api/auth.php?action=login
+[Sat Jun 13 07:32:46 2026] [::1]:48800 Closing
+[Sat Jun 13 07:32:48 2026] [::1]:48812 Accepted
+[Sat Jun 13 07:32:48 2026] [::1]:48812 [200]: GET /
+[Sat Jun 13 07:32:48 2026] [::1]:48812 Closing
+[Sat Jun 13 07:32:48 2026] [::1]:48816 Accepted
+[Sat Jun 13 07:32:48 2026] [::1]:48816 [401]: POST /api/optimize_resume.php
+[Sat Jun 13 07:32:48 2026] [::1]:48816 Closing
+[Sat Jun 13 07:32:48 2026] [::1]:48820 Accepted
+[Sat Jun 13 07:32:48 2026] [::1]:48820 [200]: GET /
+[Sat Jun 13 07:32:48 2026] [::1]:48820 Closing
+[Sat Jun 13 07:32:50 2026] [::1]:48834 Accepted
+[Sat Jun 13 07:32:50 2026] [::1]:48834 [200]: POST /api/auth.php?action=login
+[Sat Jun 13 07:32:50 2026] [::1]:48834 Closing
+[Sat Jun 13 07:32:50 2026] [::1]:48838 Accepted
+[Sat Jun 13 07:32:50 2026] [::1]:48838 [200]: GET /
+[Sat Jun 13 07:32:50 2026] [::1]:48838 Closing
+[Sat Jun 13 07:32:52 2026] [::1]:48846 Accepted
+[Sat Jun 13 07:32:52 2026] [::1]:48846 [401]: POST /api/generalize_resume.php
+[Sat Jun 13 07:32:52 2026] [::1]:48846 Closing
+[Sat Jun 13 07:32:52 2026] [::1]:48852 Accepted
+[Sat Jun 13 07:32:52 2026] [::1]:48852 [200]: GET /
+[Sat Jun 13 07:32:52 2026] [::1]:48852 Closing
+[Sat Jun 13 07:32:53 2026] [::1]:48868 Accepted
+[Sat Jun 13 07:32:53 2026] [::1]:48868 [200]: POST /api/auth.php?action=login
+[Sat Jun 13 07:32:53 2026] [::1]:48868 Closing
+[Sat Jun 13 07:32:54 2026] [::1]:48878 Accepted
+[Sat Jun 13 07:32:54 2026] [::1]:48878 [405]: GET /api/optimize_resume.php
+[Sat Jun 13 07:32:54 2026] [::1]:48878 Closing
+[Sat Jun 13 07:32:54 2026] [::1]:48886 Accepted
+[Sat Jun 13 07:32:54 2026] [::1]:48886 [401]: GET /api/generalize_resume.php
+[Sat Jun 13 07:32:54 2026] [::1]:48886 Closing
+[Sat Jun 13 07:32:54 2026] [::1]:48894 Accepted
+[Sat Jun 13 07:32:54 2026] [::1]:48894 [401]: GET /api/resumes.php
+[Sat Jun 13 07:32:54 2026] [::1]:48894 Closing
+[Sat Jun 13 07:32:54 2026] [::1]:48906 Accepted
+[Sat Jun 13 07:32:54 2026] [::1]:48906 [401]: GET /api/history.php
+[Sat Jun 13 07:32:54 2026] [::1]:48906 Closing
+[Sat Jun 13 07:32:54 2026] [::1]:48916 Accepted
+[Sat Jun 13 07:32:54 2026] [::1]:48916 [401]: GET /api/ask_ai.php
+[Sat Jun 13 07:32:54 2026] [::1]:48916 Closing
+[Sat Jun 13 07:32:54 2026] [::1]:48918 Accepted
+[Sat Jun 13 07:32:54 2026] [::1]:48918 [401]: GET /api/analyze_job.php
+[Sat Jun 13 07:32:54 2026] [::1]:48918 Closing
+[Sat Jun 13 07:32:54 2026] [::1]:48934 Accepted
+[Sat Jun 13 07:32:54 2026] [::1]:48934 [401]: POST /api/search_jobs.php
+[Sat Jun 13 07:32:54 2026] [::1]:48934 Closing
+[Sat Jun 13 07:32:54 2026] [::1]:48942 Accepted
+[Sat Jun 13 07:32:54 2026] [::1]:48942 [200]: GET /
+[Sat Jun 13 07:32:54 2026] [::1]:48942 Closing
+[Sat Jun 13 07:32:55 2026] [::1]:48956 Accepted
+[Sat Jun 13 07:32:55 2026] [::1]:48956 [200]: GET /
+[Sat Jun 13 07:32:55 2026] [::1]:48956 Closing
+[Sat Jun 13 07:32:56 2026] [::1]:48962 Accepted
+[Sat Jun 13 07:32:56 2026] [::1]:48962 [401]: POST /api/optimize_resume.php
+[Sat Jun 13 07:32:56 2026] [::1]:48962 Closing
+[Sat Jun 13 07:32:56 2026] [::1]:48976 Accepted
+[Sat Jun 13 07:32:56 2026] [::1]:48976 [200]: GET /
+[Sat Jun 13 07:32:56 2026] [::1]:48976 Closing
+[Sat Jun 13 07:33:00 2026] [::1]:51474 Accepted
+[Sat Jun 13 07:33:00 2026] [::1]:51474 [200]: GET /
+[Sat Jun 13 07:33:00 2026] [::1]:51474 Closing
+[Sat Jun 13 07:33:03 2026] [::1]:51486 Accepted
+[Sat Jun 13 07:33:03 2026] [::1]:51486 [405]: GET /api/optimize_resume.php
+[Sat Jun 13 07:33:03 2026] [::1]:51486 Closing
