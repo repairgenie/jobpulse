@@ -266,6 +266,21 @@ $history = array_slice($history, 0, 5);
                             <button @click="currentView = 'resumes'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'resumes' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
                                 <i data-lucide="file-badge" class="mr-3 h-5 w-5 opacity-100"></i> Resumes
                             </button>
+
+                            <hr class="border-slate-700/50 my-2 mx-4">
+
+                            <button @click="currentView = 'autofill'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'autofill' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                <i data-lucide="keyboard" class="mr-3 h-5 w-5 opacity-100"></i> Auto-Fill (Soon)
+                            </button>
+                            <button @click="currentView = 'analytics'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'analytics' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                <i data-lucide="bar-chart-2" class="mr-3 h-5 w-5 opacity-100"></i> Analytics (Soon)
+                            </button>
+                            <button @click="currentView = 'linkedin'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'linkedin' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                <i data-lucide="link" class="mr-3 h-5 w-5 opacity-100"></i> LinkedIn (Soon)
+                            </button>
+
+                            <hr class="border-slate-700/50 my-2 mx-4">
+
                             <button @click="currentView = 'settings'; $nextTick(() => lucide.createIcons())" :class="currentView === 'settings' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
                                 <i data-lucide="settings" class="mr-3 h-5 w-5 opacity-100"></i> Settings
                             </button>
@@ -660,19 +675,7 @@ $history = array_slice($history, 0, 5);
                     <p class="text-slate-400 text-sm md:text-base font-medium max-w-2xl">Search real-time listings aggregated by Adzuna, dynamically localized to your Zip Code.</p>
                 </div>
 
-                <!-- Feature Status Alert -->
-                <div class="mb-8 bg-amber-500/10 border border-amber-500/30 rounded-2xl p-6 flex items-start gap-4 shadow-xl">
-                    <div class="p-3 bg-amber-500/20 rounded-xl shrink-0">
-                        <i data-lucide="construction" class="w-6 h-6 text-amber-500"></i>
-                    </div>
-                    <div class="min-w-0">
-                        <h4 class="text-base font-bold text-amber-500 mb-1">Feature Under Construction</h4>
-                        <p class="text-sm text-slate-300 font-medium leading-relaxed">
-                            Please note that the <strong class="text-white">Find Openings</strong> search feature is currently <strong class="text-amber-500">not fully implemented</strong> and may not return accurate or real-time results. 
-                            We are working hard to integrate the Adzuna API for dynamic job matching.
-                        </p>
-                    </div>
-                </div>
+
 
                 <!-- Live Search Filter Bar -->
                 <div class="bg-card/80 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-4 sm:p-6 shadow-xl mb-8">
@@ -1061,6 +1064,34 @@ $history = array_slice($history, 0, 5);
                 </div>
             </div>
         </template>
+    </div>
+</div>
+
+<!-- Placeholder Views for Roadmap Features -->
+<div x-show="currentView === 'autofill' || currentView === 'analytics' || currentView === 'linkedin'" class="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-12" style="display:none;" x-cloak>
+    <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+            <h1 class="text-3xl md:text-5xl font-extrabold text-white mb-3 tracking-tight drop-shadow-md">
+                <template x-if="currentView === 'autofill'"><span>Auto-Fill Extension</span></template>
+                <template x-if="currentView === 'analytics'"><span>Analytics Dashboard</span></template>
+                <template x-if="currentView === 'linkedin'"><span>LinkedIn Integration</span></template>
+            </h1>
+            <p class="text-slate-400 text-sm md:text-base font-medium max-w-2xl">This feature is currently under active development.</p>
+        </div>
+    </div>
+
+    <div class="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-6 flex items-start gap-4 shadow-xl mb-8">
+        <div class="p-3 bg-amber-500/20 rounded-xl shrink-0">
+            <i data-lucide="construction" class="w-6 h-6 text-amber-500"></i>
+        </div>
+        <div class="min-w-0">
+            <h4 class="text-base font-bold text-amber-500 mb-1">Feature Under Construction</h4>
+            <p class="text-sm text-slate-300 font-medium leading-relaxed">
+                <template x-if="currentView === 'autofill'"><span>The Auto-Fill Chrome Extension will allow you to populate job application forms on standard ATS systems with one click.</span></template>
+                <template x-if="currentView === 'analytics'"><span>The Analytics dashboard will show conversion rates, timeline metrics, and job hunting stats.</span></template>
+                <template x-if="currentView === 'linkedin'"><span>LinkedIn Integration will automatically populate your profile and pull in job listings based on your preferences.</span></template>
+            </p>
+        </div>
     </div>
 </div>
 
@@ -1516,6 +1547,36 @@ $history = array_slice($history, 0, 5);
             </div>
 
         </main>
+
+        <!-- Mobile Navigation Bottom Bar -->
+        <nav class="md:hidden fixed bottom-0 left-0 w-full z-50 bg-sidebar border-t border-slate-700/50 shadow-2xl safe-area-pb">
+            <div class="flex items-center justify-around px-2 py-2">
+                <button @click="currentView = 'vibe_check'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'vibe_check' ? 'text-primary' : 'text-slate-400 hover:text-white'" class="flex flex-col items-center p-2 transition-colors">
+                    <i data-lucide="layout-dashboard" class="w-6 h-6 mb-1"></i>
+                    <span class="text-[10px] font-bold">Compile</span>
+                </button>
+                <button @click="currentView = 'find_jobs'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'find_jobs' ? 'text-primary' : 'text-slate-400 hover:text-white'" class="flex flex-col items-center p-2 transition-colors">
+                    <i data-lucide="search" class="w-6 h-6 mb-1"></i>
+                    <span class="text-[10px] font-bold">Find Jobs</span>
+                </button>
+                <button @click="currentView = 'my_jobs'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'my_jobs' ? 'text-primary' : 'text-slate-400 hover:text-white'" class="flex flex-col items-center p-2 transition-colors">
+                    <i data-lucide="briefcase" class="w-6 h-6 mb-1"></i>
+                    <span class="text-[10px] font-bold">My Jobs</span>
+                </button>
+                <button @click="currentView = 'dashboard'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'dashboard' ? 'text-primary' : 'text-slate-400 hover:text-white'" class="flex flex-col items-center p-2 transition-colors">
+                    <i data-lucide="layout-list" class="w-6 h-6 mb-1"></i>
+                    <span class="text-[10px] font-bold">Pipeline</span>
+                </button>
+                <button @click="currentView = 'resumes'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'resumes' ? 'text-primary' : 'text-slate-400 hover:text-white'" class="flex flex-col items-center p-2 transition-colors">
+                    <i data-lucide="file-badge" class="w-6 h-6 mb-1"></i>
+                    <span class="text-[10px] font-bold">Resumes</span>
+                </button>
+                <button @click="currentView = 'settings'; $nextTick(() => lucide.createIcons())" :class="currentView === 'settings' ? 'text-primary' : 'text-slate-400 hover:text-white'" class="flex flex-col items-center p-2 transition-colors">
+                    <i data-lucide="settings" class="w-6 h-6 mb-1"></i>
+                    <span class="text-[10px] font-bold">Settings</span>
+                </button>
+            </div>
+        </nav>
 
     </div>
 
