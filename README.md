@@ -48,7 +48,6 @@
 
 We are constantly improving JobPulse AI. The following features are currently in development:
 
-*   **[ ] Mock Interview Mode**: A voice/text interface to practice answering the specific questions generated in the Tactical Analysis.
 *   **[ ] Auto-Fill Integration**: Browser extension to help auto-fill application forms using your saved resumes.
 *   **[ ] Advanced Analytics Dashboard**: Visualizing your application conversion rate and identifying which resume versions perform best.
 *   **[ ] LinkedIn Integration**: Direct import of job postings via URL bookmarklet.
