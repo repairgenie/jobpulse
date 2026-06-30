@@ -266,6 +266,15 @@ $history = array_slice($history, 0, 5);
                             <button @click="currentView = 'resumes'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'resumes' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
                                 <i data-lucide="file-badge" class="mr-3 h-5 w-5 opacity-100"></i> Resumes
                             </button>
+                            <button @click="currentView = 'auto_fill'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'auto_fill' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                <i data-lucide="box" class="mr-3 h-5 w-5 opacity-100"></i> Auto-Fill
+                            </button>
+                            <button @click="currentView = 'analytics'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'analytics' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                <i data-lucide="pie-chart" class="mr-3 h-5 w-5 opacity-100"></i> Analytics
+                            </button>
+                            <button @click="currentView = 'linkedin'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'linkedin' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                <i data-lucide="link" class="mr-3 h-5 w-5 opacity-100"></i> LinkedIn
+                            </button>
                             <button @click="currentView = 'settings'; $nextTick(() => lucide.createIcons())" :class="currentView === 'settings' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
                                 <i data-lucide="settings" class="mr-3 h-5 w-5 opacity-100"></i> Settings
                             </button>
@@ -1061,6 +1070,45 @@ $history = array_slice($history, 0, 5);
                 </div>
             </div>
         </template>
+    </div>
+</div>
+
+<!-- Auto-Fill Integration View -->
+<div x-show="currentView === 'auto_fill'" x-transition.opacity.duration.300ms x-cloak class="relative z-10">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-12">
+        <div class="mb-8">
+            <h1 class="text-3xl font-extrabold text-white tracking-tight">Auto-Fill Integration</h1>
+            <p class="text-slate-400 mt-2 text-sm">Feature Under Construction.</p>
+        </div>
+        <div class="bg-card/50 backdrop-blur-md border border-slate-700/50 rounded-3xl p-6 shadow-xl">
+            <p class="text-slate-300">This feature will provide a browser extension to help auto-fill application forms using your saved resumes.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Advanced Analytics Dashboard View -->
+<div x-show="currentView === 'analytics'" x-transition.opacity.duration.300ms x-cloak class="relative z-10">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-12">
+        <div class="mb-8">
+            <h1 class="text-3xl font-extrabold text-white tracking-tight">Advanced Analytics Dashboard</h1>
+            <p class="text-slate-400 mt-2 text-sm">Feature Under Construction.</p>
+        </div>
+        <div class="bg-card/50 backdrop-blur-md border border-slate-700/50 rounded-3xl p-6 shadow-xl">
+            <p class="text-slate-300">This feature will visualize your application conversion rate and identify which resume versions perform best.</p>
+        </div>
+    </div>
+</div>
+
+<!-- LinkedIn Integration View -->
+<div x-show="currentView === 'linkedin'" x-transition.opacity.duration.300ms x-cloak class="relative z-10">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 md:px-10 py-8 md:py-12">
+        <div class="mb-8">
+            <h1 class="text-3xl font-extrabold text-white tracking-tight">LinkedIn Integration</h1>
+            <p class="text-slate-400 mt-2 text-sm">Feature Under Construction.</p>
+        </div>
+        <div class="bg-card/50 backdrop-blur-md border border-slate-700/50 rounded-3xl p-6 shadow-xl">
+            <p class="text-slate-300">This feature will allow direct import of job postings via a URL bookmarklet.</p>
+        </div>
     </div>
 </div>
 
