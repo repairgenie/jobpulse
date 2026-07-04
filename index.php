@@ -269,6 +269,18 @@ $history = array_slice($history, 0, 5);
                             <button @click="currentView = 'settings'; $nextTick(() => lucide.createIcons())" :class="currentView === 'settings' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
                                 <i data-lucide="settings" class="mr-3 h-5 w-5 opacity-100"></i> Settings
                             </button>
+                            <div class="pt-4 pb-2">
+                                <p class="px-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Upcoming Features</p>
+                            </div>
+                            <button @click="currentView = 'autofill'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'autofill' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                <i data-lucide="form-input" class="mr-3 h-5 w-5 opacity-100"></i> Auto-Fill
+                            </button>
+                            <button @click="currentView = 'analytics'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'analytics' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                <i data-lucide="bar-chart-2" class="mr-3 h-5 w-5 opacity-100"></i> Analytics
+                            </button>
+                            <button @click="currentView = 'linkedin'; setTimeout(() => lucide.createIcons(), 50)" :class="currentView === 'linkedin' ? 'bg-primary/10 text-primary border-primary/20' : 'text-slate-400 hover:text-white border-transparent hover:bg-slate-800'" class="w-full group flex items-center px-4 py-3 text-sm font-bold rounded-xl border transition-all">
+                                <i data-lucide="link" class="mr-3 h-5 w-5 opacity-100"></i> LinkedIn Sync
+                            </button>
 </nav>
                     </div>
                     <div class="flex-shrink-0 flex border-t border-slate-700/50 p-4 bg-darkbg/30">
@@ -1512,6 +1524,51 @@ $history = array_slice($history, 0, 5);
                             </button>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Auto-Fill View -->
+            <div x-show="currentView === 'autofill'" x-transition.opacity.duration.300ms x-cloak class="relative z-10 flex flex-col items-center justify-center h-full min-h-[60vh]">
+                <div class="bg-darkcard border border-amber-500/30 rounded-3xl p-10 max-w-lg w-full text-center shadow-2xl relative overflow-hidden">
+                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl"></div>
+                    <div class="mx-auto w-20 h-20 bg-amber-500/10 rounded-2xl flex items-center justify-center mb-6 border border-amber-500/20 shadow-inner">
+                        <i data-lucide="cone" class="w-10 h-10 text-amber-500"></i>
+                    </div>
+                    <h2 class="text-3xl font-extrabold text-white mb-4 tracking-tight">Feature Under Construction</h2>
+                    <p class="text-slate-400 mb-8 leading-relaxed">The <strong class="text-white">Auto-Fill Integration</strong> is currently being developed. Soon, you'll be able to use a browser extension to instantly populate application forms with your optimized resumes.</p>
+                    <button @click="currentView = 'vibe_check'; setTimeout(() => lucide.createIcons(), 50)" class="inline-flex items-center px-6 py-3 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-xl shadow-[0_0_15px_rgba(245,158,11,0.3)] transition-all active:scale-95">
+                        <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i> Return to Dashboard
+                    </button>
+                </div>
+            </div>
+
+            <!-- Analytics View -->
+            <div x-show="currentView === 'analytics'" x-transition.opacity.duration.300ms x-cloak class="relative z-10 flex flex-col items-center justify-center h-full min-h-[60vh]">
+                <div class="bg-darkcard border border-amber-500/30 rounded-3xl p-10 max-w-lg w-full text-center shadow-2xl relative overflow-hidden">
+                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl"></div>
+                    <div class="mx-auto w-20 h-20 bg-amber-500/10 rounded-2xl flex items-center justify-center mb-6 border border-amber-500/20 shadow-inner">
+                        <i data-lucide="cone" class="w-10 h-10 text-amber-500"></i>
+                    </div>
+                    <h2 class="text-3xl font-extrabold text-white mb-4 tracking-tight">Feature Under Construction</h2>
+                    <p class="text-slate-400 mb-8 leading-relaxed">The <strong class="text-white">Advanced Analytics Dashboard</strong> is currently being developed. Check back later to visualize your application conversion rates and resume performance.</p>
+                    <button @click="currentView = 'vibe_check'; setTimeout(() => lucide.createIcons(), 50)" class="inline-flex items-center px-6 py-3 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-xl shadow-[0_0_15px_rgba(245,158,11,0.3)] transition-all active:scale-95">
+                        <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i> Return to Dashboard
+                    </button>
+                </div>
+            </div>
+
+            <!-- LinkedIn Sync View -->
+            <div x-show="currentView === 'linkedin'" x-transition.opacity.duration.300ms x-cloak class="relative z-10 flex flex-col items-center justify-center h-full min-h-[60vh]">
+                <div class="bg-darkcard border border-amber-500/30 rounded-3xl p-10 max-w-lg w-full text-center shadow-2xl relative overflow-hidden">
+                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl"></div>
+                    <div class="mx-auto w-20 h-20 bg-amber-500/10 rounded-2xl flex items-center justify-center mb-6 border border-amber-500/20 shadow-inner">
+                        <i data-lucide="cone" class="w-10 h-10 text-amber-500"></i>
+                    </div>
+                    <h2 class="text-3xl font-extrabold text-white mb-4 tracking-tight">Feature Under Construction</h2>
+                    <p class="text-slate-400 mb-8 leading-relaxed">The <strong class="text-white">LinkedIn Integration</strong> is currently being developed. You will soon be able to directly import job postings and sync profile updates seamlessly.</p>
+                    <button @click="currentView = 'vibe_check'; setTimeout(() => lucide.createIcons(), 50)" class="inline-flex items-center px-6 py-3 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-xl shadow-[0_0_15px_rgba(245,158,11,0.3)] transition-all active:scale-95">
+                        <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i> Return to Dashboard
+                    </button>
                 </div>
             </div>
 
