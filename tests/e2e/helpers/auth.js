@@ -9,7 +9,7 @@ async function loginAsDemoUser(page) {
     await emailInput.fill('demo@jobpulse.local');
     const passInput = page.locator('input[type="password"], input[name="password"]');
     await passInput.fill('demo123');
-    const submitBtn = page.locator('button[type="submit"], button:has-text("Log in"), button:has-text("Sign in")');
+    const submitBtn = page.locator('button[type="submit"], button:has-text("Log in"), button:has-text("Sign in")').first();
     await submitBtn.click();
     await page.waitForTimeout(2000);
   }
