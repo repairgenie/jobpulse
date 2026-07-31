@@ -994,9 +994,17 @@ $history = array_slice($history, 0, 5);
                                     <span x-text="formatDate(pipelineJob.date_applied)"></span>
                                 </td>
                                 <td class="px-6 py-5 whitespace-nowrap text-right text-sm font-medium">
-                                    <button @click="deletePipelineJob(pipelineJob.id)" class="p-2 text-slate-500 hover:text-red-400 bg-slate-800/0 hover:bg-slate-800 rounded-lg transition-all opacity-0 group-hover:opacity-100">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                    </button>
+                                    <div class="flex items-center justify-end space-x-2">
+                                        <button @click="loadHistoryForAction(pipelineJob, 'ask_ai')" class="p-2 text-slate-500 hover:text-secondary bg-slate-800/0 hover:bg-slate-800 rounded-lg transition-all opacity-0 group-hover:opacity-100" title="Ask AI">
+                                            <i data-lucide="message-square" class="w-5 h-5"></i>
+                                        </button>
+                                        <button @click="openMockInterview(pipelineJob)" class="p-2 text-slate-500 hover:text-amber-400 bg-slate-800/0 hover:bg-slate-800 rounded-lg transition-all opacity-0 group-hover:opacity-100" title="Mock Interview">
+                                            <i data-lucide="mic" class="w-5 h-5"></i>
+                                        </button>
+                                        <button @click="deletePipelineJob(pipelineJob.id)" class="p-2 text-slate-500 hover:text-red-400 bg-slate-800/0 hover:bg-slate-800 rounded-lg transition-all opacity-0 group-hover:opacity-100" title="Delete">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         </template>
