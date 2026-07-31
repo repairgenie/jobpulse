@@ -660,20 +660,6 @@ $history = array_slice($history, 0, 5);
                     <p class="text-slate-400 text-sm md:text-base font-medium max-w-2xl">Search real-time listings aggregated by Adzuna, dynamically localized to your Zip Code.</p>
                 </div>
 
-                <!-- Feature Status Alert -->
-                <div class="mb-8 bg-amber-500/10 border border-amber-500/30 rounded-2xl p-6 flex items-start gap-4 shadow-xl">
-                    <div class="p-3 bg-amber-500/20 rounded-xl shrink-0">
-                        <i data-lucide="construction" class="w-6 h-6 text-amber-500"></i>
-                    </div>
-                    <div class="min-w-0">
-                        <h4 class="text-base font-bold text-amber-500 mb-1">Feature Under Construction</h4>
-                        <p class="text-sm text-slate-300 font-medium leading-relaxed">
-                            Please note that the <strong class="text-white">Find Openings</strong> search feature is currently <strong class="text-amber-500">not fully implemented</strong> and may not return accurate or real-time results. 
-                            We are working hard to integrate the Adzuna API for dynamic job matching.
-                        </p>
-                    </div>
-                </div>
-
                 <!-- Live Search Filter Bar -->
                 <div class="bg-card/80 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-4 sm:p-6 shadow-xl mb-8">
                     <div class="flex flex-col md:flex-row md:items-center gap-4">
@@ -874,7 +860,7 @@ $history = array_slice($history, 0, 5);
                                     <button @click="downloadPDF(item.optimized_resume_text, 'resume')" class="flex-1 text-[10px] font-bold text-slate-300 uppercase tracking-widest hover:text-white hover:bg-slate-700 transition flex justify-center items-center bg-darkbg py-2 rounded-lg border border-slate-700 shadow-inner">
                                         <i data-lucide="file-text" class="w-3.5 h-3.5 mr-1.5"></i> Resume
                                     </button>
-                                    <button @click="item.cover_letter ? downloadPDF(item.cover_letter, 'cover_letter') : alert('Cover letter not generated.')" :class="item.cover_letter ? 'hover:text-white hover:bg-slate-700 text-slate-300 border-slate-700' : 'text-slate-600 border-slate-800 cursor-not-allowed'" class="flex-1 text-[10px] font-bold uppercase tracking-widest transition flex justify-center items-center bg-darkbg py-2 rounded-lg border shadow-inner">
+                                    <button @click="item.cover_letter ? downloadPDF(item.cover_letter, 'cover_letter') : null" :class="item.cover_letter ? 'hover:text-white hover:bg-slate-700 text-slate-300 border-slate-700' : 'text-slate-600 border-slate-800 cursor-not-allowed'" class="flex-1 text-[10px] font-bold uppercase tracking-widest transition flex justify-center items-center bg-darkbg py-2 rounded-lg border shadow-inner">
                                         <i data-lucide="mail" class="w-3.5 h-3.5 mr-1.5"></i> Cover Ltr
                                     </button>
                                 </div>
